@@ -4,6 +4,7 @@
   export let todo: Todo | null = null;
   let menuOpen = false;
   let priorityMenuOpen = false;
+  let deleteConfirmation = false;
   
   function completeTodo() {
     if (todo) {
@@ -16,6 +17,14 @@
       todoStore.deleteTodo(todo.id);
       closeMenu();
     }
+  }
+  
+  function showDeleteConfirmation() {
+    deleteConfirmation = true;
+  }
+  
+  function cancelDelete() {
+    deleteConfirmation = false;
   }
   
   function deferTodo(days: number) {
@@ -35,6 +44,7 @@
     menuOpen = !menuOpen;
     if (!menuOpen) {
       priorityMenuOpen = false;
+      deleteConfirmation = false;
     }
   }
   
@@ -46,6 +56,7 @@
   function closeMenu() {
     menuOpen = false;
     priorityMenuOpen = false;
+    deleteConfirmation = false;
   }
   
   // Handle document clicks to close the menu
@@ -111,14 +122,28 @@
               role="menu"
               tabindex="-1"
             >
-              <button class="menu-item delete-item" on:click={deleteTodo}>
-                Delete Todo
-              </button>
-              <button class="menu-item priority-item" on:click={togglePriorityMenu}>
-                Update Priority {priorityMenuOpen ? '▲' : '▼'}
-              </button>
+              {#if !deleteConfirmation}
+                <button class="menu-item delete-item" on:click={showDeleteConfirmation}>
+                  Delete Todo
+                </button>
+                <button class="menu-item priority-item" on:click={togglePriorityMenu}>
+                  Update Priority {priorityMenuOpen ? '▲' : '▼'}
+                </button>
+              {:else}
+                <div class="confirmation-message">
+                  Are you sure?
+                </div>
+                <div class="confirmation-buttons">
+                  <button class="confirm-btn confirm-yes" on:click={deleteTodo}>
+                    Yes, Delete
+                  </button>
+                  <button class="confirm-btn confirm-no" on:click={cancelDelete}>
+                    Cancel
+                  </button>
+                </div>
+              {/if}
               
-              {#if priorityMenuOpen}
+              {#if priorityMenuOpen && !deleteConfirmation}
                 <div class="priority-submenu">
                   {#each Array(10) as _, i}
                     <button 
@@ -294,6 +319,45 @@
   .delete-item:hover {
     background-color: #ffebee;
     color: #d32f2f;
+  }
+  
+  .confirmation-message {
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: 500;
+    color: #d32f2f;
+    border-bottom: 1px solid #f1f1f1;
+  }
+  
+  .confirmation-buttons {
+    display: flex;
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .confirm-btn {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+  
+  .confirm-yes {
+    background-color: #d32f2f;
+    color: white;
+  }
+  
+  .confirm-yes:hover {
+    background-color: #b71c1c;
+  }
+  
+  .confirm-no {
+    background-color: #f1f1f1;
+    color: #333;
+  }
+  
+  .confirm-no:hover {
+    background-color: #e0e0e0;
   }
   
   .priority-submenu {
