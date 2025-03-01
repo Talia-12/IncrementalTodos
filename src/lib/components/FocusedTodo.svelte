@@ -45,7 +45,7 @@
       </div>
       
       <div class="todo-dates">
-        <p>Due: <strong>{formatDate(todo.dueDate)}</strong></p>
+        <p>Due: <strong>{formatDate(todo.nextCheckDate)}</strong></p>
         
         {#if todo.mustBeCompletedBy}
           <p>Must be completed by: <strong>{formatDate(todo.mustBeCompletedBy)}</strong></p>

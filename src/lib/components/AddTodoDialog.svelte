@@ -10,7 +10,6 @@
   let details = '';
   let showAdvanced = false;
   let priority = 5;
-  let dueDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
   let mustBeCompletedBy: string | null = null;
   let mustBeCompletedOn: string | null = null;
   let isRecurring = false;
@@ -20,30 +19,27 @@
   function handleSubmit() {
     if (!title.trim()) return;
     
-    const newTodo: Omit<Todo, 'id' | 'createdAt' | 'completed'> = {
+    const newTodo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate'> = {
       title,
-      dueDate: new Date(dueDate),
+      priority,
     };
     
     if (details) newTodo.details = details;
     
-    if (showAdvanced) {
-      newTodo.priority = priority;
       
-      if (mustBeCompletedBy) {
-        newTodo.mustBeCompletedBy = new Date(mustBeCompletedBy);
-      }
-      
-      if (mustBeCompletedOn) {
-        newTodo.mustBeCompletedOn = new Date(mustBeCompletedOn);
-      }
-      
-      if (isRecurring) {
-        newTodo.recurring = {
-          period: recurringPeriod,
-          interval: recurringInterval
-        };
-      }
+    if (mustBeCompletedBy) {
+      newTodo.mustBeCompletedBy = new Date(mustBeCompletedBy);
+    }
+    
+    if (mustBeCompletedOn) {
+      newTodo.mustBeCompletedOn = new Date(mustBeCompletedOn);
+    }
+    
+    if (isRecurring) {
+      newTodo.recurring = {
+        period: recurringPeriod,
+        interval: recurringInterval
+      };
     }
     
     todoStore.addTodo(newTodo);
@@ -56,7 +52,6 @@
     details = '';
     showAdvanced = false;
     priority = 5;
-    dueDate = new Date().toISOString().split('T')[0];
     mustBeCompletedBy = null;
     mustBeCompletedOn = null;
     isRecurring = false;
@@ -112,11 +107,6 @@
             placeholder="Any additional details..."
             rows="3"
           ></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="dueDate">Due Date</label>
-          <input type="date" id="dueDate" bind:value={dueDate} required />
         </div>
         
         <button type="button" class="toggle-advanced" on:click={toggleAdvanced}>

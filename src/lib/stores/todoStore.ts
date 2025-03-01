@@ -6,8 +6,8 @@ export interface Todo {
   title: string;
   details?: string;
   completed: boolean;
-  dueDate: Date;
-  priority?: number;
+  nextCheckDate: Date;
+  priority: number;
   mustBeCompletedBy?: Date;
   mustBeCompletedOn?: Date;
   recurring?: {
@@ -20,15 +20,18 @@ export interface Todo {
 
 // Helper function to serialize and deserialize dates in JSON
 function replacer(key: string, value: any) {
-  if (key === 'dueDate' || key === 'createdAt' || key === 'completedAt' || 
+  if (key === 'nextCheckDate' || key === 'createdAt' || key === 'completedAt' || 
       key === 'mustBeCompletedBy' || key === 'mustBeCompletedOn') {
-    return value ? value.toISOString() : null;
+    if (value && value instanceof Date) {
+      return value.toISOString();
+    }
+    return value;
   }
   return value;
 }
 
 function reviver(key: string, value: any) {
-  if (key === 'dueDate' || key === 'createdAt' || key === 'completedAt' || 
+  if (key === 'nextCheckDate' || key === 'createdAt' || key === 'completedAt' || 
       key === 'mustBeCompletedBy' || key === 'mustBeCompletedOn') {
     return value ? new Date(value) : null;
   }
@@ -46,12 +49,13 @@ function createTodoStore() {
   // Save to localStorage whenever the store changes
   const storeWithPersistence = {
     subscribe,
-    addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'completed'>) => {
+    addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate'>) => {
       const newTodo: Todo = {
         ...todo,
         id: crypto.randomUUID(),
         completed: false,
         createdAt: new Date(),
+        nextCheckDate: new Date(),
       };
       update(todos => {
         const updatedTodos = [...todos, newTodo];
@@ -87,9 +91,9 @@ function createTodoStore() {
       update(todos => {
         const updatedTodos = todos.map(todo => {
           if (todo.id === id) {
-            const newDueDate = new Date(todo.dueDate);
-            newDueDate.setDate(newDueDate.getDate() + days);
-            return { ...todo, dueDate: newDueDate };
+            const newCheckDate = todo.nextCheckDate;
+            newCheckDate.setDate(newCheckDate.getDate() + days);
+            return { ...todo, nextCheckDate: newCheckDate };
           }
           return todo;
         });
@@ -126,9 +130,9 @@ export const todaysTodos = derived(todoStore, $todos => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   
   return $todos.filter(todo => {
-    const dueDate = new Date(todo.dueDate);
-    dueDate.setHours(0, 0, 0, 0);
-    return dueDate.getTime() === today.getTime() && !todo.completed;
+    const nextCheckDate = new Date(todo.nextCheckDate);
+    nextCheckDate.setHours(0, 0, 0, 0);
+    return nextCheckDate.getTime() === today.getTime() && !todo.completed;
   });
 });
 
@@ -160,6 +164,6 @@ export function getNextFocusTodo(): Todo | null {
       return priorityB - priorityA; // Higher priority first
     }
     
-    return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    return new Date(a.nextCheckDate).getTime() - new Date(b.nextCheckDate).getTime();
   })[0];
 } 
