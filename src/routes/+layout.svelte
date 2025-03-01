@@ -18,12 +18,6 @@
       <slot />
     </div>
   </main>
-  
-  <footer>
-    <div class="container">
-      <p>IncrementalTodos - Stay focused and get things done</p>
-    </div>
-  </footer>
 </div>
 
 <style>
