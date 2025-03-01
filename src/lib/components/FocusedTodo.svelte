@@ -70,10 +70,39 @@
     }
   }
   
-  // Handle escape key to close menu
+  // Handle keyboard shortcuts
   function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && menuOpen) {
-      closeMenu();
+    // Only process if not in an input field or textarea
+    const target = event.target as HTMLElement;
+    if (target && (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA')) {
+      // Escape key to close menu
+      if (event.key === 'Escape' && menuOpen) {
+        closeMenu();
+      }
+      
+      // Only process other shortcuts if menu is not open
+      if (!menuOpen && todo) {
+        // Space key to complete todo
+        if (event.key === ' ' || event.key === 'Spacebar') {
+          event.preventDefault();
+          completeTodo();
+        }
+        
+        // Number keys 1-4 for defer buttons
+        if (event.key === '1') {
+          event.preventDefault();
+          deferTodo(1); // Defer 1 day
+        } else if (event.key === '2') {
+          event.preventDefault();
+          deferTodo(7); // Defer 7 days
+        } else if (event.key === '3') {
+          event.preventDefault();
+          deferTodo(14); // Defer 14 days
+        } else if (event.key === '4') {
+          event.preventDefault();
+          deferTodo(30); // Defer 30 days
+        }
+      }
     }
   }
   

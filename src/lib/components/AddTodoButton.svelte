@@ -1,14 +1,10 @@
 <script lang="ts">
-  import AddTodoDialog from './AddTodoDialog.svelte';
+  import { createEventDispatcher } from 'svelte';
   
-  let dialogOpen = false;
+  const dispatch = createEventDispatcher();
   
   function openDialog() {
-    dialogOpen = true;
-  }
-  
-  function handleDialogClose() {
-    dialogOpen = false;
+    dispatch('openDialog');
   }
 </script>
 
@@ -18,8 +14,6 @@
     <line x1="5" y1="12" x2="19" y2="12"></line>
   </svg>
 </button>
-
-<AddTodoDialog bind:open={dialogOpen} on:close={handleDialogClose} />
 
 <style>
   .add-todo-button {

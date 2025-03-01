@@ -1,6 +1,6 @@
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 
   const dispatch = createEventDispatcher();
   
@@ -80,6 +80,33 @@
       mustBeCompletedBy = null;
     }
   }
+  
+  // Handle keyboard shortcuts
+  function handleKeydown(event: KeyboardEvent) {
+    if (open) {
+      // Escape key to close dialog
+      if (event.key === 'Escape') {
+        close();
+      }
+      
+      // Ctrl+Enter to submit form
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (title.trim()) {
+          handleSubmit();
+        }
+      }
+    }
+  }
+  
+  // Set up and clean up event listeners
+  onMount(() => {
+    document.addEventListener('keydown', handleKeydown);
+  });
+  
+  onDestroy(() => {
+    document.removeEventListener('keydown', handleKeydown);
+  });
 </script>
 
 {#if open}
@@ -96,6 +123,7 @@
             bind:value={title} 
             placeholder="What needs to be done?" 
             required
+            autofocus
           />
         </div>
         
