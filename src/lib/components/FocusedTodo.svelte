@@ -137,7 +137,14 @@
   {#if todo}
     <div class="todo-card">
       <div class="todo-header">
-        <h1>{todo.title}</h1>
+        <h1>
+          <span class="priority-badge" style="--priority-color: {getPriorityColor(todo.priority)}">
+            {todo.priority}
+          </span>
+
+          {todo.title}
+        </h1>
+        
         <div class="menu-container">
           <button class="menu-btn" on:click|stopPropagation={toggleMenu} aria-label="Menu">
             <span class="hamburger-icon">☰</span>
@@ -190,16 +197,7 @@
         </div>
       </div>
       
-      <div class="todo-dates">
-        {#if todo.priority}
-          <p class="priority-display">
-            Priority: 
-            <span class="priority-badge" style="--priority-color: {getPriorityColor(todo.priority)}">
-              {todo.priority}
-            </span>
-          </p>
-        {/if}
-        
+      <div class="todo-dates">      
         {#if todo.mustBeCompletedBy}
           <p>Must be completed by: <strong>{formatDate(todo.mustBeCompletedBy)}</strong></p>
         {/if}
@@ -285,6 +283,8 @@
     word-break: break-word;
     flex: 1;
     padding-right: 16px;
+    display: flex;
+    align-items: center;
   }
   
   .menu-container {
@@ -429,6 +429,10 @@
     text-align: center;
     line-height: 24px;
     font-size: 14px;
+    margin-right: 8px;
+    vertical-align: middle;
+    position: relative;
+    top: 1px;
   }
   
   .priority-display {
