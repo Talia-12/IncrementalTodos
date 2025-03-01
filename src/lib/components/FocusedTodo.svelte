@@ -2,6 +2,8 @@
   import { todoStore, type Todo } from '../stores/todoStore';
   
   export let todo: Todo | null = null;
+  let menuOpen = false;
+  let priorityMenuOpen = false;
   
   function completeTodo() {
     if (todo) {
@@ -12,6 +14,7 @@
   function deleteTodo() {
     if (todo) {
       todoStore.deleteTodo(todo.id);
+      closeMenu();
     }
   }
   
@@ -20,6 +23,61 @@
       todoStore.deferTodo(todo.id, days);
     }
   }
+  
+  function updatePriority(priority: number) {
+    if (todo) {
+      todoStore.updateTodo(todo.id, { priority });
+      closeMenu();
+    }
+  }
+  
+  function toggleMenu() {
+    menuOpen = !menuOpen;
+    if (!menuOpen) {
+      priorityMenuOpen = false;
+    }
+  }
+  
+  function togglePriorityMenu(event: Event) {
+    event.stopPropagation();
+    priorityMenuOpen = !priorityMenuOpen;
+  }
+  
+  function closeMenu() {
+    menuOpen = false;
+    priorityMenuOpen = false;
+  }
+  
+  // Handle document clicks to close the menu
+  function handleDocumentClick(event: MouseEvent) {
+    if (menuOpen && !event.defaultPrevented) {
+      const target = event.target as HTMLElement;
+      // Close menu if click is outside the menu
+      if (!target.closest('.menu-container')) {
+        closeMenu();
+      }
+    }
+  }
+  
+  // Handle escape key to close menu
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && menuOpen) {
+      closeMenu();
+    }
+  }
+  
+  // Add and remove document event listeners
+  import { onMount, onDestroy } from 'svelte';
+  
+  onMount(() => {
+    document.addEventListener('click', handleDocumentClick);
+    document.addEventListener('keydown', handleKeydown);
+  });
+  
+  onDestroy(() => {
+    document.removeEventListener('click', handleDocumentClick);
+    document.removeEventListener('keydown', handleKeydown);
+  });
   
   // Format date to display in a readable format
   function formatDate(date: Date): string {
@@ -32,20 +90,61 @@
   }
 </script>
 
-<div class="focused-todo-container">
+<div class="focused-todo-container" 
+  role="region"
+  aria-label="Todo details"
+>
   {#if todo}
     <div class="todo-card">
       <div class="todo-header">
         <h1>{todo.title}</h1>
-        {#if todo.priority !== undefined}
-          <span class="priority-badge" style="--priority-color: {getPriorityColor(todo.priority)}">
-            Priority: {todo.priority}
-          </span>
-        {/if}
+        <div class="menu-container">
+          <button class="menu-btn" on:click|stopPropagation={toggleMenu} aria-label="Menu">
+            <span class="hamburger-icon">☰</span>
+          </button>
+          
+          {#if menuOpen}
+            <div 
+              class="dropdown-menu" 
+              on:click|stopPropagation={() => {}}
+              on:keydown|stopPropagation={() => {}}
+              role="menu"
+              tabindex="-1"
+            >
+              <button class="menu-item delete-item" on:click={deleteTodo}>
+                Delete Todo
+              </button>
+              <button class="menu-item priority-item" on:click={togglePriorityMenu}>
+                Update Priority {priorityMenuOpen ? '▲' : '▼'}
+              </button>
+              
+              {#if priorityMenuOpen}
+                <div class="priority-submenu">
+                  {#each Array(10) as _, i}
+                    <button 
+                      class="priority-option" 
+                      style="--priority-color: {getPriorityColor(i+1)}"
+                      on:click={() => updatePriority(i+1)}
+                    >
+                      {i+1}
+                    </button>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+          {/if}
+        </div>
       </div>
       
       <div class="todo-dates">
-        <p>Due: <strong>{formatDate(todo.nextCheckDate)}</strong></p>
+        {#if todo.priority}
+          <p class="priority-display">
+            Priority: 
+            <span class="priority-badge" style="--priority-color: {getPriorityColor(todo.priority)}">
+              {todo.priority}
+            </span>
+          </p>
+        {/if}
         
         {#if todo.mustBeCompletedBy}
           <p>Must be completed by: <strong>{formatDate(todo.mustBeCompletedBy)}</strong></p>
@@ -73,10 +172,6 @@
       <div class="action-buttons">
         <button class="complete-btn" on:click={completeTodo}>
           Complete
-        </button>
-        
-        <button class="delete-btn" on:click={deleteTodo}>
-          Delete
         </button>
         
         <div class="defer-buttons">
@@ -119,12 +214,13 @@
     padding: 32px;
     width: 100%;
     max-width: 600px;
+    position: relative;
   }
   
   .todo-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 16px;
   }
   
@@ -133,14 +229,119 @@
     font-size: 28px;
     color: #333;
     word-break: break-word;
+    flex: 1;
+    padding-right: 16px;
+  }
+  
+  .menu-container {
+    position: relative;
+  }
+  
+  .menu-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
+  }
+  
+  .menu-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .hamburger-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    z-index: 10;
+    overflow: hidden;
+  }
+  
+  .menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f1f1f1;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+  
+  .menu-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .delete-item:hover {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+  
+  .priority-submenu {
+    background-color: white;
+    border-top: 1px solid #f1f1f1;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+  
+  .priority-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--priority-color, #f1f1f1);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    font-size: 12px;
+    transition: opacity 0.2s;
+  }
+  
+  .priority-option:hover {
+    opacity: 0.8;
   }
   
   .priority-badge {
-    padding: 4px 8px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
     border-radius: 4px;
-    font-weight: bold;
     background-color: var(--priority-color, #f1f1f1);
     color: white;
+    font-weight: bold;
+    text-align: center;
+    line-height: 24px;
+    font-size: 14px;
+  }
+  
+  .priority-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   
   .todo-dates {
@@ -192,11 +393,6 @@
     color: white;
   }
   
-  .delete-btn {
-    background-color: #f44336;
-    color: white;
-  }
-  
   .defer-buttons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -210,10 +406,6 @@
   
   .complete-btn:hover {
     background-color: #3d8b40;
-  }
-  
-  .delete-btn:hover {
-    background-color: #d32f2f;
   }
   
   .defer-btn:hover {
@@ -242,22 +434,28 @@
     .defer-buttons {
       grid-template-columns: 1fr 1fr;
     }
+    
+    .priority-submenu {
+      grid-template-columns: repeat(5, 1fr);
+    }
   }
 </style>
 
 <script context="module">
   function getPriorityColor(priority: number): string {
+    // New color scheme with better contrast for white text
+    // Uses a blue-to-green-to-orange-to-red gradient that avoids low-contrast yellows
     const colors = {
-      1: '#8bc34a', // Light green
-      2: '#aed581',
-      3: '#cddc39', // Lime
-      4: '#dce775',
-      5: '#ffeb3b', // Yellow
-      6: '#ffd54f',
-      7: '#ffc107', // Amber
-      8: '#ffb74d',
-      9: '#ff9800', // Orange
-      10: '#f44336' // Red
+      1: '#4caf50', // Green - low priority
+      2: '#2e7d32', // Darker green
+      3: '#1976d2', // Blue
+      4: '#0d47a1', // Darker blue
+      5: '#5e35b1', // Purple - medium priority
+      6: '#4a148c', // Darker purple
+      7: '#e65100', // Dark orange
+      8: '#ff5722', // Bright orange
+      9: '#d32f2f', // Bright red
+      10: '#b71c1c'  // Dark red - high priority
     };
     
     return colors[priority as keyof typeof colors] || '#757575';
