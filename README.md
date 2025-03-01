@@ -1,38 +1,60 @@
-# sv
+# IncrementalTodos
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A simple Todo application with two display modes: Focus Mode and List Mode.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Focus Mode
+- Displays a single TODO item in the center of the screen
+- Buttons to mark as COMPLETE, DELETE, or DEFER
+- Four different DEFER options (1, 7, 14, or 30 days)
+
+### List Mode
+- List of all items scheduled for today with checkboxes
+- Separate list of items completed today with crossed-out text
+
+### Adding Todos
+- Button in the bottom right with a plus icon
+- Dialog with minimal fields by default (Todo item and optional details)
+- Expandable dialog with additional options:
+  - Priority (1-10)
+  - "Must be completed by" field
+  - "Must be completed on" field
+  - Recurring todo options
+
+## Data Persistence
+- Todos are saved to localStorage
+
+## Development
+
+This project uses SvelteKit.
+
+### Setup
 
 ```bash
-# create a new project in the current directory
-npx sv create
+# Install dependencies
+npm install
 
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
+# Start development server
 npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
+# Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
 
-You can preview the production build with `npm run preview`.
+## Project Structure
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- `src/lib/components/` - Reusable components
+- `src/lib/stores/` - Svelte stores for state management
+- `src/routes/` - SvelteKit routes
+  - `/` - Focus Mode
+  - `/list` - List Mode
+
+## Technologies Used
+
+- SvelteKit
+- TypeScript
+- localStorage for data persistence
