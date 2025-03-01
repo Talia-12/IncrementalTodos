@@ -80,6 +80,20 @@
         closeMenu();
       }
       
+      // Ctrl+Delete to show delete confirmation
+      if (event.key === 'Delete' && event.ctrlKey && todo) {
+        event.preventDefault();
+        menuOpen = true;
+        priorityMenuOpen = false;
+        showDeleteConfirmation();
+      }
+      
+      // Enter key to confirm deletion when delete confirmation is shown
+      if (event.key === 'Enter' && menuOpen && deleteConfirmation) {
+        event.preventDefault();
+        deleteTodo();
+      }
+      
       // Only process other shortcuts if menu is not open
       if (!menuOpen && todo) {
         // Space key to complete todo
@@ -154,26 +168,45 @@
             <div 
               class="dropdown-menu" 
               on:click|stopPropagation={() => {}}
-              on:keydown|stopPropagation={() => {}}
+              on:keydown|stopPropagation={(e) => {
+                // Handle Escape key to close menu
+                if (e.key === 'Escape') {
+                  closeMenu();
+                }
+                // Handle Enter key to confirm deletion when delete confirmation is shown
+                if (e.key === 'Enter' && deleteConfirmation) {
+                  deleteTodo();
+                }
+              }}
               role="menu"
               tabindex="-1"
             >
               {#if !deleteConfirmation}
                 <button class="menu-item delete-item" on:click={showDeleteConfirmation}>
-                  Delete Todo
+                  Delete Todo <span class="shortcut-hint">Ctrl+Del</span>
                 </button>
                 <button class="menu-item priority-item" on:click={togglePriorityMenu}>
                   Update Priority {priorityMenuOpen ? '▲' : '▼'}
                 </button>
               {:else}
                 <div class="confirmation-message">
-                  Are you sure?
+                  Are you sure? <span class="shortcut-hint">Press Enter to confirm</span>
                 </div>
                 <div class="confirmation-buttons">
-                  <button class="confirm-btn confirm-yes" on:click={deleteTodo}>
+                  <button 
+                    class="confirm-btn confirm-yes" 
+                    on:click={deleteTodo}
+                    tabindex="0"
+                    aria-label="Yes, delete this todo"
+                  >
                     Yes, Delete
                   </button>
-                  <button class="confirm-btn confirm-no" on:click={cancelDelete}>
+                  <button 
+                    class="confirm-btn confirm-no" 
+                    on:click={cancelDelete}
+                    tabindex="0"
+                    aria-label="Cancel deletion"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -216,7 +249,6 @@
       
       {#if todo.details}
         <div class="todo-details">
-          <h3>Details</h3>
           <p>{todo.details}</p>
         </div>
       {/if}
@@ -348,6 +380,26 @@
   .delete-item:hover {
     background-color: #ffebee;
     color: #d32f2f;
+  }
+  
+  .shortcut-hint {
+    float: right;
+    opacity: 0.7;
+    font-size: 12px;
+    margin-left: 8px;
+    padding: 2px 4px;
+    background-color: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  .confirmation-message .shortcut-hint {
+    float: none;
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    font-weight: normal;
+    text-align: center;
+    background-color: transparent;
   }
   
   .confirmation-message {
