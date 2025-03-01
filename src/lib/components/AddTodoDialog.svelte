@@ -99,6 +99,15 @@
     }
   }
   
+  // Prevent form submission on Enter key
+  function handleFormKeydown(event: KeyboardEvent) {
+    // Allow Enter in textarea but prevent form submission for other inputs
+    if (event.key === 'Enter' && !(event.ctrlKey || event.metaKey) && 
+        !(event.target instanceof HTMLTextAreaElement)) {
+      event.preventDefault();
+    }
+  }
+  
   // Set up and clean up event listeners
   onMount(() => {
     document.addEventListener('keydown', handleKeydown);
@@ -114,7 +123,7 @@
     <div class="dialog">
       <h2>Add New Todo</h2>
       
-      <form on:submit|preventDefault={handleSubmit}>
+      <form on:submit|preventDefault={handleSubmit} on:keydown={handleFormKeydown}>
         <div class="form-group">
           <label for="title">Todo Item *</label>
           <input 
