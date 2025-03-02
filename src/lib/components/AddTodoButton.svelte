@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  
-  const dispatch = createEventDispatcher();
+  export let onOpenDialog = () => {};
   
   function openDialog() {
-    dispatch('openDialog');
+    onOpenDialog();
   }
 </script>
 

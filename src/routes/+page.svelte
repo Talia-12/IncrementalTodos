@@ -41,7 +41,7 @@
 
 <div class="focus-mode">
   <FocusedTodo bind:todo={currentTodo} />
-  <AddTodoButton on:openDialog={handleOpenDialog} />
+  <AddTodoButton onOpenDialog={handleOpenDialog} />
 </div>
 
 <style>

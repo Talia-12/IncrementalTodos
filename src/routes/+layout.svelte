@@ -59,7 +59,7 @@
   </main>
 </div>
 
-<AddTodoDialog bind:open={dialogOpen} on:close={handleDialogClose} />
+<AddTodoDialog bind:open={dialogOpen} onClose={handleDialogClose} />
 
 <style>
   /* All styles are now in the global CSS file */

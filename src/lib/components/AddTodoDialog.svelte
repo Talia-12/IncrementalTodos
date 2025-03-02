@@ -1,11 +1,10 @@
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Calendar from './Calendar.svelte';
 
-  const dispatch = createEventDispatcher();
-  
   export let open = false;
+  export let onClose = () => {};
   
   let title = '';
   let details = '';
@@ -64,7 +63,7 @@
   
   function close() {
     open = false;
-    dispatch('close');
+    onClose();
   }
   
   function toggleAdvanced() {
@@ -188,7 +187,7 @@
               <Calendar 
                 bind:value={mustBeCompletedBy}
                 placeholder="Select completion date..."
-                on:change={handleMustBeCompletedByChange}
+                onChange={() => handleMustBeCompletedByChange()}
               />
             </div>
             
@@ -197,7 +196,7 @@
               <Calendar 
                 bind:value={mustBeCompletedOn}
                 placeholder="Select exact completion date..."
-                on:change={handleMustBeCompletedOnChange}
+                onChange={() => handleMustBeCompletedOnChange()}
               />
             </div>
             

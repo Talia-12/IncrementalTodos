@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   
   // Props
@@ -10,14 +10,15 @@
   export let disabled = false;
   export let placeholder = "Select date...";
   export let format = "MMMM d, yyyy";
+  export let onChange = (date: Date) => {};
+  export let onOpen = () => {};
+  export let onClose = () => {};
   
   // Internal state
   let currentMonth: Date;
   let selectedDate: Date | null = value;
   let inputElement: HTMLInputElement;
   let calendarElement: HTMLDivElement;
-  
-  const dispatch = createEventDispatcher();
   
   // Initialize current month based on value or current date
   $: currentMonth = value ? new Date(value) : new Date();
@@ -144,7 +145,7 @@
     
     selectedDate = date;
     value = date;
-    dispatch('change', { date });
+    onChange(date);
     close();
   }
   
@@ -156,14 +157,14 @@
       close();
     } else {
       open = true;
-      dispatch('open');
+      onOpen();
     }
   }
   
   // Close calendar
   function close(): void {
     open = false;
-    dispatch('close');
+    onClose();
   }
   
   // Handle click outside to close calendar
