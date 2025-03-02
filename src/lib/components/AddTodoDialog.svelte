@@ -1,6 +1,7 @@
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import Calendar from './Calendar.svelte';
 
   const dispatch = createEventDispatcher();
   
@@ -10,8 +11,8 @@
   let details = '';
   let showAdvanced = false;
   let priority = 5;
-  let mustBeCompletedBy: string | null = null;
-  let mustBeCompletedOn: string | null = null;
+  let mustBeCompletedBy: Date | null = null;
+  let mustBeCompletedOn: Date | null = null;
   let isRecurring = false;
   let recurringPeriod: 'daily' | 'weekly' | 'monthly' | 'yearly' = 'daily';
   let recurringInterval = 1;
@@ -30,11 +31,11 @@
     
       
     if (mustBeCompletedBy) {
-      newTodo.mustBeCompletedBy = new Date(mustBeCompletedBy);
+      newTodo.mustBeCompletedBy = mustBeCompletedBy;
     }
     
     if (mustBeCompletedOn) {
-      newTodo.mustBeCompletedOn = new Date(mustBeCompletedOn);
+      newTodo.mustBeCompletedOn = mustBeCompletedOn;
     }
     
     if (isRecurring) {
@@ -184,20 +185,18 @@
             
             <div class="form-group">
               <label for="mustBeCompletedBy">Must Be Completed By</label>
-              <input 
-                type="date" 
-                id="mustBeCompletedBy" 
-                bind:value={mustBeCompletedBy} 
+              <Calendar 
+                bind:value={mustBeCompletedBy}
+                placeholder="Select completion date..."
                 on:change={handleMustBeCompletedByChange}
               />
             </div>
             
             <div class="form-group">
               <label for="mustBeCompletedOn">Must Be Completed On</label>
-              <input 
-                type="date" 
-                id="mustBeCompletedOn" 
+              <Calendar 
                 bind:value={mustBeCompletedOn}
+                placeholder="Select exact completion date..."
                 on:change={handleMustBeCompletedOnChange}
               />
             </div>
