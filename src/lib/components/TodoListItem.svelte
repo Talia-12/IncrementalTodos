@@ -59,18 +59,18 @@
   .todo-list-item {
     display: flex;
     align-items: flex-start;
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition-fast);
   }
   
   .todo-list-item:hover {
-    background-color: #f9f9f9;
+    background-color: var(--surface-hover);
   }
   
   .todo-list-item.completed .todo-title .title-text {
     text-decoration: line-through;
-    color: #888;
+    color: var(--text-tertiary);
   }
   
   .checkbox-container {
@@ -78,7 +78,7 @@
     display: block;
     min-width: 24px;
     height: 24px;
-    margin-right: 16px;
+    margin-right: var(--spacing-md);
     cursor: pointer;
   }
   
@@ -96,19 +96,19 @@
     left: 0;
     height: 24px;
     width: 24px;
-    background-color: #fff;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    transition: all 0.2s;
+    background-color: var(--surface);
+    border: 2px solid var(--border-dark);
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
   }
   
   .checkbox-container:hover .checkmark {
-    border-color: #4a90e2;
+    border-color: var(--primary);
   }
   
   .checkbox-container input:checked ~ .checkmark {
-    background-color: #4a90e2;
-    border-color: #4a90e2;
+    background-color: var(--primary);
+    border-color: var(--primary);
   }
   
   .checkmark:after {
@@ -138,27 +138,27 @@
   .todo-title {
     display: flex;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: var(--spacing-xs);
   }
   
   .priority-indicator {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: var(--priority-color, #ccc);
-    margin-right: 8px;
+    background-color: var(--priority-color, var(--border-dark));
+    margin-right: var(--spacing-sm);
     flex-shrink: 0;
   }
   
   .title-text {
     font-weight: 500;
-    color: #333;
+    color: var(--text-primary);
   }
   
   .todo-details {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 4px;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -166,27 +166,15 @@
   }
   
   .completed-at {
-    font-size: 12px;
-    color: #888;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
     font-style: italic;
   }
 </style>
 
 <script context="module">
   function getPriorityColor(priority: number): string {
-    const colors = {
-      1: '#8bc34a', // Light green
-      2: '#aed581',
-      3: '#cddc39', // Lime
-      4: '#dce775',
-      5: '#ffeb3b', // Yellow
-      6: '#ffd54f',
-      7: '#ffc107', // Amber
-      8: '#ffb74d',
-      9: '#ff9800', // Orange
-      10: '#f44336' // Red
-    };
-    
-    return colors[priority as keyof typeof colors] || '#757575';
+    // Use CSS variables from global styles
+    return `var(--priority-${priority}, #757575)`;
   }
 </script> 

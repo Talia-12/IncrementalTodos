@@ -325,14 +325,14 @@
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 100px);
-    padding: 20px;
+    padding: var(--spacing-md);
   }
   
   .todo-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 32px;
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-xl);
     width: 100%;
     max-width: 600px;
     position: relative;
@@ -342,16 +342,16 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: var(--spacing-md);
   }
   
   h1 {
     margin: 0;
-    font-size: 28px;
-    color: #333;
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
     word-break: break-word;
     flex: 1;
-    padding-right: 16px;
+    padding-right: var(--spacing-md);
     display: flex;
     align-items: center;
   }
@@ -363,9 +363,9 @@
   .menu-btn {
     width: 32px;
     height: 32px;
-    border-radius: 4px;
-    background-color: #f1f1f1;
-    color: #333;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--border);
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -373,11 +373,11 @@
     border: none;
     padding: 0;
     flex-shrink: 0;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-fast);
   }
   
   .menu-btn:hover {
-    background-color: #e0e0e0;
+    background-color: var(--border-dark);
   }
   
   .hamburger-icon {
@@ -389,9 +389,9 @@
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
     min-width: 180px;
     z-index: 10;
     overflow: hidden;
@@ -401,32 +401,33 @@
     display: block;
     width: 100%;
     text-align: left;
-    padding: 10px 16px;
+    padding: var(--spacing-sm) var(--spacing-md);
     background: none;
     border: none;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--border);
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s;
+    font-size: var(--font-size-sm);
+    transition: background-color var(--transition-fast);
+    color: var(--text-primary);
   }
   
   .menu-item:hover {
-    background-color: #f9f9f9;
+    background-color: var(--surface-hover);
   }
   
   .delete-item:hover {
-    background-color: #ffebee;
-    color: #d32f2f;
+    background-color: var(--danger-dark);
+    color: var(--danger);
   }
   
   .shortcut-hint {
     float: right;
     opacity: 0.7;
-    font-size: 12px;
-    margin-left: 8px;
+    font-size: var(--font-size-xs);
+    margin-left: var(--spacing-sm);
     padding: 2px 4px;
-    background-color: #f1f1f1;
-    border-radius: 3px;
+    background-color: var(--border);
+    border-radius: var(--border-radius-sm);
   }
   
   .confirmation-message .shortcut-hint {
@@ -440,48 +441,48 @@
   }
   
   .confirmation-message {
-    padding: 12px 16px;
+    padding: var(--spacing-sm) var(--spacing-md);
     text-align: center;
     font-weight: 500;
-    color: #d32f2f;
-    border-bottom: 1px solid #f1f1f1;
+    color: var(--danger);
+    border-bottom: 1px solid var(--border);
   }
   
   .confirmation-buttons {
     display: flex;
-    padding: 8px;
-    gap: 8px;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
   }
   
   .confirm-btn {
     flex: 1;
-    padding: 8px 12px;
-    font-size: 14px;
-    border-radius: 4px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-sm);
   }
   
   .confirm-yes {
-    background-color: #d32f2f;
+    background-color: var(--danger);
     color: white;
   }
   
   .confirm-yes:hover {
-    background-color: #b71c1c;
+    background-color: var(--danger-dark);
   }
   
   .confirm-no {
-    background-color: #f1f1f1;
-    color: #333;
+    background-color: var(--border);
+    color: var(--text-primary);
   }
   
   .confirm-no:hover {
-    background-color: #e0e0e0;
+    background-color: var(--border-dark);
   }
   
   .priority-submenu {
-    background-color: white;
-    border-top: 1px solid #f1f1f1;
-    padding: 8px;
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: var(--spacing-sm);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 4px;
@@ -490,17 +491,17 @@
   .priority-option {
     width: 30px;
     height: 30px;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--priority-color, #f1f1f1);
+    background-color: var(--priority-color, var(--border-dark));
     color: white;
     font-weight: bold;
     cursor: pointer;
     border: none;
-    font-size: 12px;
-    transition: opacity 0.2s;
+    font-size: var(--font-size-xs);
+    transition: opacity var(--transition-fast);
   }
   
   .priority-option:hover {
@@ -511,110 +512,104 @@
     display: inline-block;
     width: 24px;
     height: 24px;
-    border-radius: 4px;
-    background-color: var(--priority-color, #f1f1f1);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--priority-color, var(--border-dark));
     color: white;
     font-weight: bold;
     text-align: center;
     line-height: 24px;
-    font-size: 14px;
-    margin-right: 8px;
+    font-size: var(--font-size-sm);
+    margin-right: var(--spacing-sm);
     vertical-align: middle;
     position: relative;
     top: 1px;
   }
   
-  .priority-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
   .todo-dates {
-    margin-bottom: 24px;
-    color: #555;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-secondary);
   }
   
   .todo-dates p {
-    margin: 8px 0;
+    margin: var(--spacing-sm) 0;
   }
   
   .todo-details {
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    padding: 16px;
-    margin-bottom: 24px;
+    background-color: var(--surface-hover);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
   }
   
   .todo-details h3 {
     margin-top: 0;
-    margin-bottom: 8px;
-    color: #333;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
   }
   
   .todo-details p {
     margin: 0;
     white-space: pre-wrap;
-    color: #555;
+    color: var(--text-secondary);
   }
   
   .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-md);
   }
   
   button {
-    padding: 12px 16px;
-    border-radius: 4px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-fast);
     border: none;
-    font-size: 16px;
+    font-size: var(--font-size-md);
   }
   
   .complete-btn {
-    background-color: #4caf50;
+    background-color: var(--success);
     color: white;
   }
   
   .defer-buttons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
+    gap: var(--spacing-sm);
   }
   
   .defer-btn {
-    background-color: #ff9800;
+    background-color: var(--warning);
     color: white;
   }
   
   .complete-btn:hover {
-    background-color: #3d8b40;
+    background-color: var(--success-dark);
   }
   
   .defer-btn:hover {
-    background-color: #f57c00;
+    background-color: var(--warning-dark);
   }
   
   .empty-state {
     text-align: center;
-    color: #777;
+    color: var(--text-tertiary);
   }
   
   .empty-state h2 {
-    font-size: 24px;
-    margin-bottom: 8px;
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-sm);
   }
   
   @media (max-width: 600px) {
     .todo-card {
-      padding: 20px;
+      padding: var(--spacing-md);
     }
     
     h1 {
-      font-size: 24px;
+      font-size: var(--font-size-xl);
     }
     
     .defer-buttons {
@@ -629,21 +624,7 @@
 
 <script context="module">
   function getPriorityColor(priority: number): string {
-    // New color scheme with better contrast for white text
-    // Uses a blue-to-green-to-orange-to-red gradient that avoids low-contrast yellows
-    const colors = {
-      1: '#4caf50', // Green - low priority
-      2: '#2e7d32', // Darker green
-      3: '#1976d2', // Blue
-      4: '#0d47a1', // Darker blue
-      5: '#5e35b1', // Purple - medium priority
-      6: '#4a148c', // Darker purple
-      7: '#e65100', // Dark orange
-      8: '#ff5722', // Bright orange
-      9: '#d32f2f', // Bright red
-      10: '#b71c1c'  // Dark red - high priority
-    };
-    
-    return colors[priority as keyof typeof colors] || '#757575';
+    // Use CSS variables from global styles
+    return `var(--priority-${priority}, #757575)`;
   }
 </script> 
