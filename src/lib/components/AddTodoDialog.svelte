@@ -16,6 +16,8 @@
   let recurringPeriod: 'daily' | 'weekly' | 'monthly' | 'yearly' = 'daily';
   let recurringInterval = 1;
 
+  let titleInput: HTMLInputElement;
+
   function handleSubmit() {
     if (!title.trim()) return;
     
@@ -101,6 +103,8 @@
   
   // Prevent form submission on Enter key
   function handleFormKeydown(event: KeyboardEvent) {
+    if (!open) return;
+    
     // Allow Enter in textarea but prevent form submission for other inputs
     if (event.key === 'Enter' && !(event.ctrlKey || event.metaKey) && 
         !(event.target instanceof HTMLTextAreaElement)) {
@@ -111,28 +115,41 @@
   // Set up and clean up event listeners
   onMount(() => {
     document.addEventListener('keydown', handleKeydown);
+    document.addEventListener('keydown', handleFormKeydown);
+    
+    // Focus the title input when dialog opens
+    if (open && titleInput) {
+      titleInput.focus();
+    }
   });
+  
+  // Watch for changes to open state
+  $: if (open && titleInput) {
+    // Use setTimeout to ensure DOM is updated
+    setTimeout(() => titleInput.focus(), 0);
+  }
   
   onDestroy(() => {
     document.removeEventListener('keydown', handleKeydown);
+    document.removeEventListener('keydown', handleFormKeydown);
   });
 </script>
 
 {#if open}
   <div class="dialog-backdrop">
-    <div class="dialog">
+    <div class="dialog" role="dialog" aria-modal="true">
       <h2>Add New Todo</h2>
       
-      <form on:submit|preventDefault={handleSubmit} on:keydown={handleFormKeydown}>
+      <form on:submit|preventDefault={handleSubmit}>
         <div class="form-group">
           <label for="title">Todo Item *</label>
           <input 
             type="text" 
             id="title" 
+            bind:this={titleInput}
             bind:value={title} 
             placeholder="What needs to be done?" 
             required
-            autofocus
           />
         </div>
         
