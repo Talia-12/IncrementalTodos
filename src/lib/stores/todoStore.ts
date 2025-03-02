@@ -7,6 +7,7 @@ export interface Todo {
   details?: string;
   completed: boolean;
   nextCheckDate: Date;
+  delayDays: number;
   priority: number;
   mustBeCompletedBy?: Date;
   mustBeCompletedOn?: Date;
@@ -49,13 +50,14 @@ function createTodoStore() {
   // Save to localStorage whenever the store changes
   const storeWithPersistence = {
     subscribe,
-    addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate'>) => {
+    addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate' | 'delayDays'>) => {
       const newTodo: Todo = {
         ...todo,
         id: crypto.randomUUID(),
         completed: false,
         createdAt: new Date(),
         nextCheckDate: new Date(),
+        delayDays: 1000,
       };
       update(todos => {
         const updatedTodos = [...todos, newTodo];
@@ -87,13 +89,13 @@ function createTodoStore() {
         return updatedTodos;
       });
     },
-    deferTodo: (id: string, days: number) => {
+    deferTodo: (id: string, days: number, deferMultiplier: number) => {
       update(todos => {
         const updatedTodos = todos.map(todo => {
           if (todo.id === id) {
             const newCheckDate = todo.nextCheckDate;
             newCheckDate.setDate(newCheckDate.getDate() + days);
-            return { ...todo, nextCheckDate: newCheckDate };
+            return { ...todo, nextCheckDate: newCheckDate, delayDays: todo.delayDays * deferMultiplier };
           }
           return todo;
         });

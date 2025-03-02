@@ -22,7 +22,7 @@
   function handleSubmit() {
     if (!title.trim()) return;
     
-    const newTodo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate'> = {
+    const newTodo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate' | 'delayDays'> = {
       title,
       priority,
     };

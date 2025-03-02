@@ -27,10 +27,16 @@
     deleteConfirmation = false;
   }
   
-  function deferTodo(days: number) {
+  function deferTodo(days: number | string) {
     if (todo) {
-      todoStore.deferTodo(todo.id, days);
-    }
+      if (typeof days === 'number') {
+        todoStore.deferTodo(todo.id, days, 1.05);
+      } else if (days === 'short') {
+        todoStore.deferTodo(todo.id, todo.delayDays, 1.2);
+      } else if (days === 'long') {
+        todoStore.deferTodo(todo.id, todo.delayDays * 2, 1.5);
+      }
+    } 
   }
   
   function updatePriority(priority: number) {
@@ -111,10 +117,10 @@
           deferTodo(7); // Defer 7 days
         } else if (event.key === '3') {
           event.preventDefault();
-          deferTodo(14); // Defer 14 days
+          deferTodo('short');
         } else if (event.key === '4') {
           event.preventDefault();
-          deferTodo(30); // Defer 30 days
+          deferTodo('long');
         }
       }
     }
@@ -141,6 +147,37 @@
       month: 'long',
       day: 'numeric'
     });
+  }
+
+  // Format defer duration in a human-readable way
+  function formatDeferDuration(days: number): string {
+    if (days <= 0) return '0 Days';
+    
+    const years = Math.floor(days / 365);
+    const remainingDaysAfterYears = days % 365;
+    const months = Math.floor(remainingDaysAfterYears / 30);
+    const remainingDays = Math.floor(remainingDaysAfterYears % 30);
+    
+    let result = '';
+    
+    if (years > 0) {
+      result += `${years} ${years === 1 ? 'Year' : 'Years'}`;
+      if (months > 0) result += '<br>';
+      // Don't show days if years are visible
+    }
+    
+    if (months > 0) {
+      result += `${months} ${months === 1 ? 'Month' : 'Months'}`;
+      // Only show days if no years are present
+      if (remainingDays > 0 && years === 0) result += '<br>';
+    }
+    
+    // Only show days if no years are present
+    if ((remainingDays > 0 && years === 0) || (years === 0 && months === 0)) {
+      result += `${remainingDays} ${remainingDays === 1 ? 'Day' : 'Days'}`;
+    }
+    
+    return result;
   }
 </script>
 
@@ -260,16 +297,16 @@
         
         <div class="defer-buttons">
           <button class="defer-btn" on:click={() => deferTodo(1)}>
-            Defer 1 Day
+            Defer<br> 1 Day
           </button>
           <button class="defer-btn" on:click={() => deferTodo(7)}>
-            Defer 7 Days
+            Defer<br> 7 Days
           </button>
-          <button class="defer-btn" on:click={() => deferTodo(14)}>
-            Defer 14 Days
+          <button class="defer-btn" on:click={() => deferTodo('short')}>
+            Defer<br> {@html formatDeferDuration(Math.round(todo.delayDays * 1.2))}
           </button>
-          <button class="defer-btn" on:click={() => deferTodo(30)}>
-            Defer 30 Days
+          <button class="defer-btn" on:click={() => deferTodo('long')}>
+            Defer<br> {@html formatDeferDuration(Math.round(todo.delayDays * 2))}
           </button>
         </div>
       </div>
