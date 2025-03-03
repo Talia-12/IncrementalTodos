@@ -19,7 +19,7 @@
 
   let titleInput: HTMLInputElement;
 
-  function handleSubmit() {
+  function submitTodo(shouldClose: boolean = true) {
     if (!title.trim()) return;
     
     const newTodo: Omit<Todo, 'id' | 'createdAt' | 'completed' | 'nextCheckDate' | 'delayDays'> = {
@@ -47,7 +47,17 @@
     
     todoStore.addTodo(newTodo);
     resetForm();
-    close();
+    if (shouldClose) {
+      close();
+    } else {
+      // Focus back on the title input for the next todo
+      titleInput?.focus();
+    }
+  }
+  
+  function handleSubmit(event: SubmitEvent) {
+    event.preventDefault();
+    submitTodo();
   }
   
   function resetForm() {
@@ -96,7 +106,7 @@
       if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
         if (title.trim()) {
-          handleSubmit();
+          submitTodo(false);
         }
       }
     }
@@ -125,9 +135,11 @@
   });
   
   // Watch for changes to open state
-  $: if (open && titleInput) {
+  $: if (open) {
+    // Reset form when dialog opens
+    resetForm();
     // Use setTimeout to ensure DOM is updated
-    setTimeout(() => titleInput.focus(), 0);
+    setTimeout(() => titleInput?.focus(), 0);
   }
   
   onDestroy(() => {
