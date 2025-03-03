@@ -165,8 +165,14 @@ header {
 
 header .container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: var(--spacing-md);
+}
+
+header h1 {
+  margin: 0;
+  text-align: center;
 }
 
 main {

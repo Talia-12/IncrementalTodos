@@ -44,7 +44,7 @@
 <div class="app">
   <header>
     <div class="container">
-      <h1>IncrementalTodos</h1>
+      <h1>Incremental Todos</h1>
       <nav>
         <a href="/" class:active={$page.url.pathname === '/'}>Focus Mode</a>
         <a href="/list" class:active={$page.url.pathname === '/list'}>List Mode</a>
