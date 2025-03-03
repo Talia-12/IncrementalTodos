@@ -145,7 +145,7 @@ export const todaysTodos = derived(todoStore, $todos => {
   return $todos.filter(todo => {
     const nextCheckDate = new Date(todo.nextCheckDate);
     nextCheckDate.setHours(0, 0, 0, 0);
-    return nextCheckDate.getTime() === today.getTime() && !todo.completed;
+    return nextCheckDate.getTime() <= today.getTime() && !todo.completed;
   });
 });
 

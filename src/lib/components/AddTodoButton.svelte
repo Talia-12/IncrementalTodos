@@ -4,7 +4,7 @@
   Related Files:
   - src/lib/components/AddTodoDialog.svelte
   - src/routes/+page.svelte
-  - src/routes/+layout.svelte
+  - src/routes/list/+page.svelte
 -->
 
 <script lang="ts">
