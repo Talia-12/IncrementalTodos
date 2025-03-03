@@ -10,11 +10,28 @@
 
 <script lang="ts">
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import AddTodoDialog from '$lib/components/AddTodoDialog.svelte';
   import { onMount, onDestroy } from 'svelte';
+  import { register } from '@tauri-apps/plugin-global-shortcut';
   import '../app.css';
   
   let dialogOpen = false;
+  
+  const routes = ['/', '/list', '/colour-demo'];
+  
+  function cycleRoute(direction: 'next' | 'prev') {
+    const currentIndex = routes.indexOf($page.url.pathname);
+    let nextIndex;
+    
+    if (direction === 'next') {
+      nextIndex = currentIndex + 1 >= routes.length ? 0 : currentIndex + 1;
+    } else {
+      nextIndex = currentIndex - 1 < 0 ? routes.length - 1 : currentIndex - 1;
+    }
+    
+    goto(routes[nextIndex]);
+  }
   
   function openDialog() {
     dialogOpen = true;
@@ -23,7 +40,7 @@
   function handleDialogClose() {
     dialogOpen = false;
   }
-  
+
   function handleKeydown(event: KeyboardEvent) {
     // Only trigger if not in an input field or textarea
     const target = event.target as HTMLElement;
@@ -33,6 +50,16 @@
         event.preventDefault();
         openDialog();
       }
+      
+      // Handle Ctrl+Tab cycle through routes
+      if (event.key === 'Tab' && event.ctrlKey) {
+        // Prevent the default behavior as early as possible
+        event.stopPropagation();
+        event.preventDefault();
+        
+        console.log('Cycling to next route'); 
+        cycleRoute('next');
+      }
     }
   }
   
@@ -41,12 +68,14 @@
   }
   
   onMount(() => {
-    document.addEventListener('keydown', handleKeydown);
+    // Use capture phase (true as third parameter) to intercept before browser defaults
+    document.addEventListener('keydown', handleKeydown, true);
     window.addEventListener('open-add-todo-dialog', handleCustomEvent);
   });
   
   onDestroy(() => {
-    document.removeEventListener('keydown', handleKeydown);
+    // Make sure to remove the capture phase listener
+    document.removeEventListener('keydown', handleKeydown, true);
     window.removeEventListener('open-add-todo-dialog', handleCustomEvent);
   });
 </script>
