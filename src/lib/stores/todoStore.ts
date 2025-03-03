@@ -157,15 +157,8 @@ export function getNextFocusTodo(): Todo | null {
   const todos = get(todaysTodos);
   if (todos.length === 0) return null;
   
-  // Sort by priority (higher first) and then by due date
+  // Sort by due date
   return [...todos].sort((a, b) => {
-    const priorityA = a.priority || 3;
-    const priorityB = b.priority || 3;
-    
-    if (priorityA !== priorityB) {
-      return priorityB - priorityA; // Higher priority first
-    }
-    
-    return new Date(a.nextCheckDate).getTime() - new Date(b.nextCheckDate).getTime();
+    return a.nextCheckDate.getTime() - b.nextCheckDate.getTime();
   })[0];
 } 

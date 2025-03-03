@@ -31,12 +31,23 @@
   
   function deferTodo(days: number | string) {
     if (todo) {
+      // Calculate delay multiplier based on priority
+      // Priority 1 (low) = 1.5x delay
+      // Priority 3 (medium) = 1x delay  
+      // Priority 5 (high) = 0.75x delay
+      const priorityMultiplier = todo.priority 
+        ? 1.5 - ((todo.priority - 1) * 0.1875) 
+        : 1;
+      
       if (typeof days === 'number') {
+        // Defer by a fixed number of days - this shouldn't be
+        // affected by priority multiplier since we want the actual
+        // deferred days to be the same as the displayed days
         todoStore.deferTodo(todo.id, days, 1.05);
       } else if (days === 'short') {
-        todoStore.deferTodo(todo.id, todo.delayDays, 1.2);
+        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier, 1.2);
       } else if (days === 'long') {
-        todoStore.deferTodo(todo.id, todo.delayDays * 2, 1.5);
+        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier * 2, 1.5);
       }
     } 
   }
@@ -302,11 +313,15 @@
           <button class="defer-btn" on:click={() => deferTodo(7)}>
             7 Days
           </button>
+          <!-- Priority affects defer duration:
+               Priority 1 (low) = 1.5x longer
+               Priority 3 (med) = 1.0x base duration  
+               Priority 5 (high) = 0.75x shorter -->
           <button class="defer-btn" on:click={() => deferTodo('short')}>
-            {@html formatDeferDuration(Math.round(todo.delayDays * 1.2))}
+            {@html formatDeferDuration(Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 1.2))}
           </button>
           <button class="defer-btn" on:click={() => deferTodo('long')}>
-            {@html formatDeferDuration(Math.round(todo.delayDays * 2))}
+            {@html formatDeferDuration(Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 2))}
           </button>
         </div>
       </div>
