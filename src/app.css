@@ -494,6 +494,20 @@ input[type="checkbox"], input[type="radio"] {
 .ml-5 { margin-left: var(--spacing-xl); }
 .mr-5 { margin-right: var(--spacing-xl); }
 
+/* ===== PRIORITY INDICATORS ===== */
+.priority-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--priority-color, var(--border-dark));
+  color: var(--text-primary-dark);
+  font-weight: bold;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
+  width: 32px;
+  height: 32px;
+}
+
 /* ===== RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
   header .container {

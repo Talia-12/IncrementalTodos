@@ -1,5 +1,6 @@
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
+  import { getPriorityColor } from '$lib/utils/priority';
   
   export let todo: Todo;
   
@@ -170,11 +171,4 @@
     color: var(--text-tertiary);
     font-style: italic;
   }
-</style>
-
-<script context="module">
-  function getPriorityColor(priority: number): string {
-    // Use CSS variables from global styles
-    return `var(--priority-${priority}, #757575)`;
-  }
-</script> 
+</style> 

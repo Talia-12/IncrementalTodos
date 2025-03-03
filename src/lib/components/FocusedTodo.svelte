@@ -1,5 +1,7 @@
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
+  import { onMount, onDestroy } from 'svelte';
+  import { getPriorityColor } from '$lib/utils/priority';
   
   export let todo: Todo | null = null;
   let menuOpen = false;
@@ -127,8 +129,6 @@
   }
   
   // Add and remove document event listeners
-  import { onMount, onDestroy } from 'svelte';
-  
   onMount(() => {
     document.addEventListener('click', handleDocumentClick);
     document.addEventListener('keydown', handleKeydown);
@@ -189,7 +189,7 @@
     <div class="todo-card">
       <div class="todo-header">
         <h1>
-          <span class="priority-badge" style="--priority-color: {getPriorityColor(todo.priority)}">
+          <span class="priority-badge priority-indicator" style="--priority-color: {getPriorityColor(todo.priority)}">
             {todo.priority}
           </span>
 
@@ -253,7 +253,7 @@
                 <div class="priority-submenu">
                   {#each Array(10) as _, i}
                     <button 
-                      class="priority-option" 
+                      class="priority-option priority-indicator" 
                       style="--priority-color: {getPriorityColor(i+1)}"
                       on:click={() => updatePriority(i+1)}
                     >
@@ -488,16 +488,9 @@
     gap: 4px;
   }
   
-  .priority-option {
+  .priority-option.priority-indicator {
     width: 36px;
     height: 36px;
-    border-radius: var(--border-radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--priority-color, var(--border-dark));
-    color: var(--text-primary-dark);
-    font-weight: bold;
     cursor: pointer;
     border: none;
     font-size: var(--font-size-sm);
@@ -508,17 +501,10 @@
     opacity: 0.8;
   }
   
-  .priority-badge {
+  .priority-badge.priority-indicator {
     display: inline-block;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--border-radius-sm);
-    background-color: var(--priority-color, var(--border-dark));
-    color: var(--text-primary-dark);
-    font-weight: bold;
     text-align: center;
     line-height: 32px;
-    font-size: var(--font-size-md);
     margin-right: var(--spacing-sm);
     vertical-align: middle;
     position: relative;
@@ -615,11 +601,4 @@
       grid-template-columns: repeat(5, 1fr);
     }
   }
-</style>
-
-<script context="module">
-  function getPriorityColor(priority: number): string {
-    // Use CSS variables from global styles
-    return `var(--priority-${priority}, #757575)`;
-  }
-</script> 
+</style> 

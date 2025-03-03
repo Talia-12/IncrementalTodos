@@ -2,6 +2,7 @@
   import { todoStore, type Todo } from '../stores/todoStore';
   import { onMount, onDestroy } from 'svelte';
   import Calendar from './Calendar.svelte';
+  import { getPriorityColor } from '$lib/utils/priority';
 
   export let open = false;
   export let onClose = () => {};
@@ -170,16 +171,22 @@
         {#if showAdvanced}
           <div class="advanced-options">
             <div class="form-group">
-              <label for="priority">Priority (1-10)</label>
-              <input 
-                type="range" 
-                id="priority" 
-                bind:value={priority} 
-                min="1" 
-                max="10" 
-                step="1" 
-              />
-              <span class="priority-value">{priority}</span>
+              <label for="priority">Priority</label>
+              <div class="priority-selection">
+                <div class="priority-buttons">
+                  {#each Array(10) as _, i}
+                    <button 
+                      type="button"
+                      class="priority-option priority-indicator" 
+                      class:selected={priority === i + 1}
+                      style="--priority-color: {getPriorityColor(i + 1)}"
+                      on:click={() => priority = i + 1}
+                    >
+                      {i + 1}
+                    </button>
+                  {/each}
+                </div>
+              </div>
             </div>
             
             <div class="form-group">
@@ -340,9 +347,39 @@
     border-left: 2px solid var(--border);
   }
   
-  .priority-value {
-    margin-left: 8px;
-    font-weight: bold;
+  .priority-selection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .priority-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--surface);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border);
+  }
+
+  .priority-option {
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    border: none;
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-fast);
+    justify-self: center;
+  }
+
+  .priority-option:hover {
+    transform: scale(1.1);
+  }
+
+  .priority-option.selected {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--primary);
   }
   
   .dialog-actions {
