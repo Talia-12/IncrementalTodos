@@ -489,18 +489,18 @@
   }
   
   .priority-option {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     border-radius: var(--border-radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--priority-color, var(--border-dark));
-    color: var(--text-primary);
+    color: var(--text-primary-dark);
     font-weight: bold;
     cursor: pointer;
     border: none;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     transition: opacity var(--transition-fast);
   }
   
@@ -510,19 +510,19 @@
   
   .priority-badge {
     display: inline-block;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--border-radius-sm);
     background-color: var(--priority-color, var(--border-dark));
     color: var(--text-primary-dark);
     font-weight: bold;
     text-align: center;
-    line-height: 24px;
-    font-size: var(--font-size-sm);
+    line-height: 32px;
+    font-size: var(--font-size-md);
     margin-right: var(--spacing-sm);
     vertical-align: middle;
     position: relative;
-    top: 1px;
+    top: -1px;
   }
   
   .todo-dates {
