@@ -297,16 +297,16 @@
         
         <div class="defer-buttons">
           <button class="defer-btn" on:click={() => deferTodo(1)}>
-            Defer<br> 1 Day
+            1 Day
           </button>
           <button class="defer-btn" on:click={() => deferTodo(7)}>
-            Defer<br> 7 Days
+            7 Days
           </button>
           <button class="defer-btn" on:click={() => deferTodo('short')}>
-            Defer<br> {@html formatDeferDuration(Math.round(todo.delayDays * 1.2))}
+            {@html formatDeferDuration(Math.round(todo.delayDays * 1.2))}
           </button>
           <button class="defer-btn" on:click={() => deferTodo('long')}>
-            Defer<br> {@html formatDeferDuration(Math.round(todo.delayDays * 2))}
+            {@html formatDeferDuration(Math.round(todo.delayDays * 2))}
           </button>
         </div>
       </div>
@@ -334,7 +334,7 @@
     border: 1px solid var(--border);
     padding: var(--spacing-xl);
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
     position: relative;
   }
   
@@ -361,8 +361,8 @@
   }
   
   .menu-btn {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     border-radius: var(--border-radius-sm);
     background-color: var(--border);
     color: var(--text-primary);
@@ -381,7 +381,7 @@
   }
   
   .hamburger-icon {
-    font-size: 18px;
+    font-size: 32px;
     line-height: 1;
   }
   
@@ -392,7 +392,7 @@
     background-color: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md);
-    min-width: 180px;
+    min-width: 320px;
     z-index: 10;
     overflow: hidden;
   }
@@ -401,12 +401,12 @@
     display: block;
     width: 100%;
     text-align: left;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     background: none;
     border: none;
     border-bottom: 1px solid var(--border);
     cursor: pointer;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     transition: background-color var(--transition-fast);
     color: var(--text-primary);
   }
@@ -423,9 +423,9 @@
   .shortcut-hint {
     float: right;
     opacity: 0.7;
-    font-size: var(--font-size-xs);
-    margin-left: var(--spacing-sm);
-    padding: 2px 4px;
+    font-size: var(--font-size-sm);
+    margin-left: var(--spacing-md);
+    padding: 4px 8px;
     background-color: var(--border);
     border-radius: var(--border-radius-sm);
   }
@@ -482,18 +482,18 @@
   .priority-submenu {
     background-color: var(--surface);
     border-top: 1px solid var(--border);
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 4px;
+    gap: var(--spacing-sm);
   }
   
   .priority-option.priority-indicator {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     cursor: pointer;
     border: none;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     transition: opacity var(--transition-fast);
   }
   
@@ -504,8 +504,10 @@
   .priority-badge.priority-indicator {
     display: inline-block;
     text-align: center;
-    line-height: 32px;
-    margin-right: var(--spacing-sm);
+    line-height: 42px;
+    width: 42px;
+    height: 42px;
+    margin-right: var(--spacing-md);
     vertical-align: middle;
     position: relative;
     top: -1px;
@@ -587,6 +589,7 @@
   @media (max-width: 600px) {
     .todo-card {
       padding: var(--spacing-md);
+      max-width: 95%;
     }
     
     h1 {
@@ -595,10 +598,12 @@
     
     .defer-buttons {
       grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
     }
     
     .priority-submenu {
       grid-template-columns: repeat(5, 1fr);
+      padding: var(--spacing-sm);
     }
   }
 </style> 
