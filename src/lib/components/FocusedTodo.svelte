@@ -1,3 +1,12 @@
+<!-- 
+  File: src/lib/components/FocusedTodo.svelte
+  Description: A component that displays a single todo item in focus mode with full details and actions. It provides functionality for completing, deferring, updating priority, and deleting todos. Includes keyboard shortcuts for quick actions.
+  Related Files:
+  - src/routes/+page.svelte
+  - src/lib/stores/todoStore.ts
+  - src/lib/utils/priority.ts
+-->
+
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
   import { onMount, onDestroy } from 'svelte';

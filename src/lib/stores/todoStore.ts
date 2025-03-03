@@ -1,3 +1,14 @@
+/*
+  File: src/lib/stores/todoStore.ts
+  Description: The central store for managing todo items in the application. Provides a Svelte store with persistence to localStorage and derived stores for different views. Includes functionality for adding, completing, deferring, and managing todos.
+  Related Files:
+  - src/lib/components/FocusedTodo.svelte
+  - src/lib/components/TodoListItem.svelte
+  - src/lib/components/AddTodoDialog.svelte
+  - src/routes/+page.svelte
+  - src/routes/list/+page.svelte
+*/
+
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 

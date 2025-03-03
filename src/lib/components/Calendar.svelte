@@ -1,3 +1,10 @@
+<!-- 
+  File: src/lib/components/Calendar.svelte
+  Description: A reusable calendar component that provides a date picker with a popup calendar interface. Features include month navigation, date selection with min/max constraints, and keyboard accessibility.
+  Related Files:
+  - src/lib/components/AddTodoDialog.svelte
+-->
+
 <script lang="ts">
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';

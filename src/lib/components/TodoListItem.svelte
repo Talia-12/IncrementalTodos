@@ -1,3 +1,12 @@
+<!-- 
+  File: src/lib/components/TodoListItem.svelte
+  Description: A component that renders a single todo item in a list view. Shows the todo's title, details, priority indicator, and completion status with a checkbox. Used in list views of todos.
+  Related Files:
+  - src/routes/list/+page.svelte
+  - src/lib/stores/todoStore.ts
+  - src/lib/utils/priority.ts
+-->
+
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
   import { getPriorityColor } from '$lib/utils/priority';

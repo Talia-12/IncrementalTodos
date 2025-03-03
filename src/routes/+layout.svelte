@@ -1,3 +1,13 @@
+<!-- 
+  File: src/routes/+layout.svelte
+  Description: The root layout component that provides the application shell, including the header with navigation and the AddTodoDialog that can be opened from anywhere in the app. Also handles global keyboard shortcuts.
+  Related Files:
+  - src/lib/components/AddTodoDialog.svelte
+  - src/routes/+page.svelte
+  - src/routes/list/+page.svelte
+  - src/app.css
+-->
+
 <script lang="ts">
   import { page } from '$app/stores';
   import AddTodoDialog from '$lib/components/AddTodoDialog.svelte';

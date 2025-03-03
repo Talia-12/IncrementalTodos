@@ -1,3 +1,12 @@
+<!-- 
+  File: src/lib/components/AddTodoButton.svelte
+  Description: A floating action button component that appears in the bottom-right corner of the screen. When clicked, it triggers the opening of the AddTodoDialog for creating new todo items.
+  Related Files:
+  - src/lib/components/AddTodoDialog.svelte
+  - src/routes/+page.svelte
+  - src/routes/+layout.svelte
+-->
+
 <script lang="ts">
   export let onOpenDialog = () => {};
   

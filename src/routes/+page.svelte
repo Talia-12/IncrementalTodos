@@ -1,3 +1,13 @@
+<!-- 
+  File: src/routes/+page.svelte
+  Description: The main focus mode page component that displays a single todo item at a time. This is the default landing page of the application that shows the most important/urgent todo item that needs attention.
+  Related Files:
+  - src/lib/components/FocusedTodo.svelte
+  - src/lib/components/AddTodoButton.svelte
+  - src/lib/stores/todoStore.ts
+  - src/routes/+layout.svelte
+-->
+
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { getNextFocusTodo, todoStore, type Todo } from '$lib/stores/todoStore';

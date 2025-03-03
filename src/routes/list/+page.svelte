@@ -1,3 +1,13 @@
+<!-- 
+  File: src/routes/list/+page.svelte
+  Description: The list mode page component that displays two sections: today's todos and completed todos. This view provides a traditional todo list interface showing multiple items at once.
+  Related Files:
+  - src/lib/components/TodoListItem.svelte
+  - src/lib/components/AddTodoButton.svelte
+  - src/lib/stores/todoStore.ts
+  - src/routes/+layout.svelte
+-->
+
 <script lang="ts">
   import { todaysTodos, completedToday } from '$lib/stores/todoStore';
   import TodoListItem from '$lib/components/TodoListItem.svelte';

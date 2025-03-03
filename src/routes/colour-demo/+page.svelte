@@ -1,3 +1,11 @@
+<!-- 
+  File: src/routes/colour-demo/+page.svelte
+  Description: A demo page that showcases the application's color system and theme variables. Displays color swatches, theme combinations, and UI component examples with different color variations.
+  Related Files:
+  - src/app.css
+  - src/routes/+layout.svelte
+-->
+
 <script lang="ts">
   // Color categories from peach.css
   const colorCategories = [

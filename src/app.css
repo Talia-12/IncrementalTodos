@@ -1,5 +1,11 @@
-/* IncrementalTodos Global Styles
-   A comprehensive styling system for the entire application
+/*
+  File: src/app.css
+  Description: The global CSS file that defines the application's design system, including variables for colors, typography, spacing, and components. Built on top of peach.css, it provides a comprehensive set of styles and utilities used throughout the application.
+  Related Files:
+  - src/routes/+layout.svelte
+  - src/lib/utils/priority.ts
+  - src/routes/colour-demo/+page.svelte
+  - peach.css (external)
 */
 
 @import url("peach.css");

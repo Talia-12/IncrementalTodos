@@ -1,3 +1,13 @@
+<!-- 
+  File: src/lib/components/AddTodoDialog.svelte
+  Description: A modal dialog component for creating new todo items. Provides a form with basic and advanced options including title, details, priority, completion dates, and recurring settings.
+  Related Files:
+  - src/lib/components/AddTodoButton.svelte
+  - src/lib/components/Calendar.svelte
+  - src/lib/stores/todoStore.ts
+  - src/lib/utils/priority.ts
+-->
+
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
   import { onMount, onDestroy } from 'svelte';
