@@ -259,7 +259,7 @@
   }
   
   .dialog {
-    background-color: white;
+    background-color: var(--background);
     border-radius: 8px;
     padding: 24px;
     width: 90%;
@@ -272,7 +272,7 @@
   h2 {
     margin-top: 0;
     margin-bottom: 16px;
-    color: #333;
+    color: var(--text-primary);
   }
   
   .form-group {
@@ -283,17 +283,16 @@
     display: block;
     margin-bottom: 6px;
     font-weight: 500;
-    color: #555;
+    color: var(--text-primary);
   }
   
   input[type="text"],
-  input[type="date"],
   input[type="number"],
   textarea,
   select {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 4px;
     font-size: 16px;
   }
@@ -321,7 +320,7 @@
   .toggle-advanced {
     background: none;
     border: none;
-    color: #4a90e2;
+    color: var(--text-tertiary);
     cursor: pointer;
     padding: 0;
     font-size: 14px;
@@ -330,7 +329,7 @@
   }
   
   .advanced-options {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border);
     padding-top: 16px;
     margin-top: 8px;
   }
@@ -338,7 +337,7 @@
   .recurring-options {
     margin-left: 16px;
     padding-left: 16px;
-    border-left: 2px solid #eee;
+    border-left: 2px solid var(--border);
   }
   
   .priority-value {
@@ -362,22 +361,23 @@
   }
   
   .cancel-btn {
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    color: #555;
+    background-color: var(--background-secondary-hsl1);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
   }
   
   .add-btn {
-    background-color: #4a90e2;
-    border: 1px solid #3a80d2;
-    color: white;
+    background-color: var(--primary);
+    border: 1px solid var(--primary-dark);
+    color: var(--text-primary);
   }
   
   .cancel-btn:hover {
-    background-color: #e5e5e5;
+    background-color: var(--background-secondary-hsl1);
   }
   
   .add-btn:hover {
-    background-color: #3a80d2;
+    background-color: var(--primary-dark);
+    color: var(--text-primary-dark);
   }
 </style> 

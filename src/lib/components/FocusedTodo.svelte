@@ -331,7 +331,7 @@
   .todo-card {
     background-color: var(--surface);
     border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
     padding: var(--spacing-xl);
     width: 100%;
     max-width: 600px;
@@ -417,7 +417,7 @@
   
   .delete-item:hover {
     background-color: var(--danger-dark);
-    color: var(--danger);
+    color: var(--text-primary-dark);
   }
   
   .shortcut-hint {
@@ -463,7 +463,7 @@
   
   .confirm-yes {
     background-color: var(--danger);
-    color: white;
+    color: var(--text-primary-dark);
   }
   
   .confirm-yes:hover {
@@ -496,7 +496,7 @@
     align-items: center;
     justify-content: center;
     background-color: var(--priority-color, var(--border-dark));
-    color: white;
+    color: var(--text-primary);
     font-weight: bold;
     cursor: pointer;
     border: none;
@@ -514,7 +514,7 @@
     height: 24px;
     border-radius: var(--border-radius-sm);
     background-color: var(--priority-color, var(--border-dark));
-    color: white;
+    color: var(--text-primary-dark);
     font-weight: bold;
     text-align: center;
     line-height: 24px;
@@ -535,16 +535,11 @@
   }
   
   .todo-details {
-    background-color: var(--surface-hover);
+    background-color: var(--surface-alt);
     border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border);
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-xl);
-  }
-  
-  .todo-details h3 {
-    margin-top: 0;
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-primary);
   }
   
   .todo-details p {
@@ -571,7 +566,7 @@
   
   .complete-btn {
     background-color: var(--success);
-    color: white;
+    color: var(--text-primary-dark);
   }
   
   .defer-buttons {

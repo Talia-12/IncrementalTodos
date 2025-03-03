@@ -48,6 +48,7 @@
       <nav>
         <a href="/" class:active={$page.url.pathname === '/'}>Focus Mode</a>
         <a href="/list" class:active={$page.url.pathname === '/list'}>List Mode</a>
+        <a href="/colour-demo" class:active={$page.url.pathname === '/colour-demo'}>Colour Demo</a>
       </nav>
     </div>
   </header>

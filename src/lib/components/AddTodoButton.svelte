@@ -21,8 +21,8 @@
     width: 168px;
     height: 168px;
     border-radius: 50%;
-    background-color: #4a90e2;
-    color: white;
+    background-color: var(--primary);
+    color: var(--text-primary);
     border: none;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -34,7 +34,8 @@
   }
   
   .add-todo-button:hover {
-    background-color: #3a80d2;
+    background-color: var(--primary-dark);
+    color: var(--text-primary-dark);
     transform: scale(1.05);
   }
   

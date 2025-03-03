@@ -1,0 +1,126 @@
+/* [Color Scheme - Fruit] Light Theme */
+:root {
+	/* The color variables below are comma separated HSL values. This format is necessary for using these
+	   variables down the line in the theme and being able to create variants with varying alpha values (HSLA). */
+	
+	/* Base colours are used for the backgrounds in the accented color areas. */
+	--color-grey-base-hsl:     0,   0%, 90%;
+	--color-red-base-hsl:      9,  90%, 92%;
+	--color-orange-base-hsl:  25,  96%, 89%;
+	--color-yellow-base-hsl:  41,  91%, 83%;
+	--color-green-base-hsl:  101,  53%, 85%;
+	--color-mint-base-hsl:   153,  64%, 84%;
+	--color-cyan-base-hsl:   184,  63%, 85%;
+	--color-blue-base-hsl:   221,  85%, 92%;
+	--color-purple-base-hsl: 250, 100%, 94%;
+	--color-pink-base-hsl:   328,  84%, 93%;
+
+	/* Tint colours are used for the borders in the accented color areas. */
+	--color-grey-tint-hsl:     0,   0%, 73%;
+	--color-red-tint-hsl:      7,  79%, 78%;
+	--color-orange-tint-hsl:  26,  89%, 69%;
+	--color-yellow-tint-hsl:  44,  70%, 56%;
+	--color-green-tint-hsl:   98,  52%, 58%;
+	--color-mint-tint-hsl:   160,  61%, 52%;
+	--color-cyan-tint-hsl:   184,  63%, 54%;
+	--color-blue-tint-hsl:   219,  78%, 78%;
+	--color-purple-tint-hsl: 252,  90%, 84%;
+	--color-pink-tint-hsl:   326,  76%, 79%;
+
+	/* Text colours are used for the Text in the accented color areas and other Text areas which use the theme colours
+	   e.g. Syntax Highlighting, Mark Highlight System, etc. */
+	--color-grey-text-hsl:     0,   0%, 47%;
+	--color-red-text-hsl:      4,  67%, 51%;
+	--color-orange-text-hsl:  29, 100%, 37%;
+	--color-yellow-text-hsl:  39,  70%, 36%;
+	--color-green-text-hsl:   95, 100%, 26%;
+	--color-mint-text-hsl:   160, 100%, 26%;
+	--color-cyan-text-hsl:   185, 100%, 28%;
+	--color-blue-text-hsl:   221,  72%, 56%;
+	--color-purple-text-hsl: 259,  81%, 64%;
+	--color-pink-text-hsl:   319,  66%, 49%;
+
+	/* Default theme variable overwrites for different shades of text used in the editor and around the UI. */
+	--text-normal-hsl: 3, 55%, 15%;
+	--text-muted-hsl:  3, 55%, 20%;
+	--text-faint-hsl:  3, 55%, 35%;
+
+	/* Text colors for dark backgrounds - these have higher contrast ratios for readability */
+	--text-on-dark-normal-hsl: 3, 15%, 95%;
+	--text-on-dark-muted-hsl:  3, 15%, 85%; 
+	--text-on-dark-faint-hsl:  3, 15%, 75%;
+
+	/* Default theme variable overwrites for the UI background colours. */
+	--background-primary-hsl:        3, 55%, 98%;
+	--background-primary-alt-hsl:    3, 55%, 95%;
+	--background-secondary-hsl:      3, 55%, 93%;
+	--background-secondary-blur-hsl: 3, 55%, 92%;
+	--background-secondary-alt-hsl:  3, 55%, 74%;
+	--background-tertiary-hsl:       3, 55%, 90%;
+	--background-tertiary-alt-hsl:   3, 55%, 85%;
+
+	/* Default theme variable overwrites for shadows used on modals and popups. */
+	--shadow-color-hsl: 3, 55%, 7%;
+	--shadow-s: hsla(var(--shadow-color-hsl), 10%) 0 1px 2px 0;
+	--shadow-l: hsla(var(--shadow-color-hsl), 4%) 0 1px 2px, hsla(var(--shadow-color-hsl), 4%) 0 2px 4px, hsla(var(--shadow-color-hsl), 4%) 0 4px 8px, hsla(var(--shadow-color-hsl), 4%) 0 6px 12px;
+
+    /* New variables that wrap HSL values in hsl() function */
+	--color-grey-base-hsl1:    hsl(var(--color-grey-base-hsl));
+	--color-red-base-hsl1:     hsl(var(--color-red-base-hsl));
+	--color-orange-base-hsl1:  hsl(var(--color-orange-base-hsl));
+	--color-yellow-base-hsl1:  hsl(var(--color-yellow-base-hsl));
+	--color-green-base-hsl1:   hsl(var(--color-green-base-hsl));
+	--color-mint-base-hsl1:    hsl(var(--color-mint-base-hsl));
+	--color-cyan-base-hsl1:    hsl(var(--color-cyan-base-hsl));
+	--color-blue-base-hsl1:    hsl(var(--color-blue-base-hsl));
+	--color-purple-base-hsl1:  hsl(var(--color-purple-base-hsl));
+	--color-pink-base-hsl1:    hsl(var(--color-pink-base-hsl));
+
+	/* Tint colours are used for the borders in the accented color areas. */
+	--color-grey-tint-hsl1:    hsl(var(--color-grey-tint-hsl));
+	--color-red-tint-hsl1:     hsl(var(--color-red-tint-hsl));
+	--color-orange-tint-hsl1:  hsl(var(--color-orange-tint-hsl));
+	--color-yellow-tint-hsl1:  hsl(var(--color-yellow-tint-hsl));
+	--color-green-tint-hsl1:   hsl(var(--color-green-tint-hsl));
+	--color-mint-tint-hsl1:    hsl(var(--color-mint-tint-hsl));
+	--color-cyan-tint-hsl1:    hsl(var(--color-cyan-tint-hsl));
+	--color-blue-tint-hsl1:    hsl(var(--color-blue-tint-hsl));
+	--color-purple-tint-hsl1:  hsl(var(--color-purple-tint-hsl));
+	--color-pink-tint-hsl1:    hsl(var(--color-pink-tint-hsl));
+
+	/* Text colours are used for the Text in the accented color areas and other Text areas which use the theme colours
+	   e.g. Syntax Highlighting, Mark Highlight System, etc. */
+	--color-grey-text-hsl1:    hsl(var(--color-grey-text-hsl));
+	--color-red-text-hsl1:     hsl(var(--color-red-text-hsl));
+	--color-orange-text-hsl1:  hsl(var(--color-orange-text-hsl));
+	--color-yellow-text-hsl1:  hsl(var(--color-yellow-text-hsl));
+	--color-green-text-hsl1:   hsl(var(--color-green-text-hsl));
+	--color-mint-text-hsl1:    hsl(var(--color-mint-text-hsl));
+	--color-cyan-text-hsl1:    hsl(var(--color-cyan-text-hsl));
+	--color-blue-text-hsl1:    hsl(var(--color-blue-text-hsl));
+	--color-purple-text-hsl1:  hsl(var(--color-purple-text-hsl));
+	--color-pink-text-hsl1:    hsl(var(--color-pink-text-hsl));
+
+	/* Default theme variable overwrites for different shades of text used in the editor and around the UI. */
+	--text-normal-hsl1:  hsl(var(--text-normal-hsl));
+	--text-muted-hsl1:   hsl(var(--text-muted-hsl));
+	--text-faint-hsl1:   hsl(var(--text-faint-hsl));
+
+	/* Default theme variable overwrites for different shades of text used on dark backgrounds. */
+	--text-on-dark-normal-hsl1:  hsl(var(--text-on-dark-normal-hsl));
+	--text-on-dark-muted-hsl1:   hsl(var(--text-on-dark-muted-hsl));
+	--text-on-dark-faint-hsl1:   hsl(var(--text-on-dark-faint-hsl));
+
+	/* Default theme variable overwrites for the UI background colours. */
+	--background-primary-hsl1:        hsl(var(--background-primary-hsl));
+	--background-primary-alt-hsl1:    hsl(var(--background-primary-alt-hsl));
+	--background-secondary-hsl1:      hsl(var(--background-secondary-hsl));
+	--background-secondary-blur-hsl1: hsl(var(--background-secondary-blur-hsl));
+	--background-secondary-alt-hsl1:  hsl(var(--background-secondary-alt-hsl));
+	--background-tertiary-hsl1:       hsl(var(--background-tertiary-hsl));
+	--background-tertiary-alt-hsl1:   hsl(var(--background-tertiary-alt-hsl));
+
+	/* Default theme variable overwrites for shadows used on modals and popups. */
+	--shadow-color-hsl1:  hsl(var(--shadow-color-hsl));
+    
+}
