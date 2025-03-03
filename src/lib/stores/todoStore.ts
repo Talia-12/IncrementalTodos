@@ -159,8 +159,8 @@ export function getNextFocusTodo(): Todo | null {
   
   // Sort by priority (higher first) and then by due date
   return [...todos].sort((a, b) => {
-    const priorityA = a.priority || 5;
-    const priorityB = b.priority || 5;
+    const priorityA = a.priority || 3;
+    const priorityB = b.priority || 3;
     
     if (priorityA !== priorityB) {
       return priorityB - priorityA; // Higher priority first

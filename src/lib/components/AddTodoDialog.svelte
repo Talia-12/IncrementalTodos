@@ -54,7 +54,7 @@
     title = '';
     details = '';
     showAdvanced = false;
-    priority = 5;
+    priority = 3;
     mustBeCompletedBy = null;
     mustBeCompletedOn = null;
     isRecurring = false;
@@ -174,7 +174,7 @@
               <label for="priority">Priority</label>
               <div class="priority-selection">
                 <div class="priority-buttons">
-                  {#each Array(10) as _, i}
+                  {#each Array(5) as _, i}
                     <button 
                       type="button"
                       class="priority-option priority-indicator" 

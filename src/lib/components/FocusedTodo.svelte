@@ -251,7 +251,7 @@
               
               {#if priorityMenuOpen && !deleteConfirmation}
                 <div class="priority-submenu">
-                  {#each Array(10) as _, i}
+                  {#each Array(5) as _, i}
                     <button 
                       class="priority-option priority-indicator" 
                       style="--priority-color: {getPriorityColor(i+1)}"

@@ -44,17 +44,12 @@ The application uses a consistent color palette defined as CSS variables:
 - `--border-dark`: #dddddd - Darker border color
 
 ### Priority Colors
-The application uses a color scale for todo priorities (1-10):
+The application uses a color scale for todo priorities (1-5):
 - `--priority-1`: #2e7d32 - Dark green (lowest priority)
 - `--priority-2`: #388e3c - Forest green
 - `--priority-3`: #558b2f - Olive green
 - `--priority-4`: #827717 - Dark lime
-- `--priority-5`: #f57f17 - Dark amber (medium priority)
-- `--priority-6`: #ef6c00 - Dark orange
-- `--priority-7`: #e65100 - Deep orange
-- `--priority-8`: #d84315 - Burnt orange
-- `--priority-9`: #c62828 - Dark red
-- `--priority-10`: #b71c1c - Deep red (highest priority)
+- `--priority-5`: #f57f17 - Dark amber (highest priority)
 
 ## Typography
 
