@@ -363,22 +363,22 @@
     border: 1px solid var(--border);
   }
 
-  .priority-option {
-    width: 36px;
+  .priority-option.priority-indicator {
+    width: 100%;
     height: 36px;
     cursor: pointer;
     border: none;
     font-size: var(--font-size-sm);
     transition: all var(--transition-fast);
-    justify-self: center;
+    justify-self: stretch;
   }
 
   .priority-option:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .priority-option.selected {
-    transform: scale(1.1);
+    transform: scale(1.05);
     box-shadow: 0 0 0 2px var(--primary);
   }
   
