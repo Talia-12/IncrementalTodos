@@ -247,7 +247,8 @@ button, .btn {
 }
 
 button:hover, .btn:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--surface-hover);
+  color: var(--text-hover);
 }
 
 button:focus, .btn:focus {
@@ -389,7 +390,6 @@ input[type="checkbox"], input[type="radio"] {
 .todo-card {
   background-color: var(--surface);
   border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
 }
@@ -397,25 +397,7 @@ input[type="checkbox"], input[type="radio"] {
 .todo-list {
   background-color: var(--surface);
   border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
   overflow: hidden;
-}
-
-.todo-list-item {
-  display: flex;
-  align-items: flex-start;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--border);
-  transition: background-color var(--transition-fast);
-}
-
-.todo-list-item:hover {
-  background-color: var(--surface-hover);
-}
-
-.todo-list-item.completed .todo-title .title-text {
-  text-decoration: line-through;
-  color: var(--text-tertiary);
 }
 
 /* ===== DIALOGS & MODALS ===== */

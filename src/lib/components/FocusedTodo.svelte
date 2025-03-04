@@ -353,7 +353,7 @@
   }
   
   .todo-card {
-    background-color: var(--surface);
+    background-color: white;
     border-radius: var(--border-radius-md);
     border: 1px solid var(--border);
     padding: var(--spacing-xl);
@@ -388,20 +388,22 @@
     width: 42px;
     height: 42px;
     border-radius: var(--border-radius-sm);
-    background-color: var(--border);
-    color: var(--text-primary);
+    background-color: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: none;
     padding: 0;
     flex-shrink: 0;
     transition: background-color var(--transition-fast);
   }
   
   .menu-btn:hover {
-    background-color: var(--border-dark);
+    background-color: var(--surface-hover);
+    color: var(--text-hover);
+    border-color: var(--border-hover);
   }
   
   .hamburger-icon {
@@ -419,16 +421,17 @@
     min-width: 320px;
     z-index: 10;
     overflow: hidden;
+    border: 1px solid var(--border);
   }
   
   .menu-item {
     display: block;
-    width: 100%;
+    width: calc(100% - 1em);
     text-align: left;
     padding: var(--spacing-md) var(--spacing-lg);
+    margin: 0.5em;
     background: none;
     border: none;
-    border-bottom: 1px solid var(--border);
     cursor: pointer;
     font-size: var(--font-size-md);
     transition: background-color var(--transition-fast);
@@ -437,6 +440,7 @@
   
   .menu-item:hover {
     background-color: var(--surface-hover);
+    color: var(--text-hover);
   }
   
   .delete-item:hover {

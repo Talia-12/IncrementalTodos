@@ -283,7 +283,7 @@
 
   .defer-btn:hover {
     background-color: var(--surface-hover);
-    border-color: var(--border-dark);
-    color: var(--text-primary);
+    border-color: var(--border-hover);
+    color: var(--text-hover);
   }
 </style> 
