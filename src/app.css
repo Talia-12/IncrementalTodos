@@ -35,12 +35,14 @@
   --background: var(--background-primary-hsl1);
   --surface: var(--background-secondary-hsl1);
   --surface-alt: var(--background-tertiary-hsl1);
-  --surface-hover: var(--background-secondary-alt-hsl1);
+  --surface-selected: var(--color-purple-base-hsl1);
+  --surface-hover: var(--color-purple-base-hsl1);
   
   --text-primary: var(--text-normal-hsl1);
   --text-secondary: var(--text-muted-hsl1);
   --text-tertiary: var(--text-faint-hsl1);
   --text-disabled: var(--text-muted-hsl1);
+  --text-hover: var(--color-purple-text-hsl1);
 
   --text-primary-dark: var(--text-on-dark-normal-hsl1);
   --text-secondary-dark: var(--text-on-dark-muted-hsl1);
@@ -49,6 +51,8 @@
   
   --border: var(--background-secondary-alt-hsl1);
   --border-dark: var(--background-secondary-alt-hsl1);
+  --border-selected: var(--color-purple-tint-hsl1);
+  --border-hover: var(--color-purple-tint-hsl1);
   
   /* Priority Colors */
   --priority-1: var(--color-green-tint-hsl1);
@@ -207,21 +211,21 @@ nav a {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
   transition: all var(--transition-fast);
-  background-color: var(--surface-alt);
+  /* background-color: var(--surface-alt); */
   border: 1px solid var(--border);
+}
+
+nav a.active {
+  background-color: var(--surface-selected);
+  border-color: var(--border-selected);
+  color: var(--text-primary);
+  /* font-weight: 500; */
 }
 
 nav a:hover {
   background-color: var(--surface-hover);
-  border-color: var(--primary);
-  color: var(--text-primary);
-}
-
-nav a.active {
-  background-color: var(--surface-hover);
-  border-color: var(--primary);
-  font-weight: 500;
-  cursor: default;
+  border-color: var(--border-hover);
+  color: var(--text-hover);
 }
 
 /* ===== BUTTONS ===== */

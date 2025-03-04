@@ -8,7 +8,13 @@
 -->
 
 <script lang="ts">
-  export let onOpenDialog = () => {};
+  function handleOpenDialog() {
+    // Dispatch a custom event that the layout will listen for
+    const event = new CustomEvent('open-add-todo-dialog');
+    window.dispatchEvent(event);
+  }
+
+  export let onOpenDialog = handleOpenDialog;
   
   function openDialog() {
     onOpenDialog();
@@ -30,8 +36,8 @@
     width: 168px;
     height: 168px;
     border-radius: 50%;
-    background-color: var(--primary);
-    color: var(--text-primary);
+    background-color: var(--surface-alt);
+    color: var(--text-secondary);
     border: none;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -43,8 +49,8 @@
   }
   
   .add-todo-button:hover {
-    background-color: var(--primary-dark);
-    color: var(--text-primary-dark);
+    background-color: var(--surface-hover);
+    color: var(--text-hover);
     transform: scale(1.05);
   }
   

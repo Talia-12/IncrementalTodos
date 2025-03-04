@@ -21,12 +21,6 @@
     currentTodo = getNextFocusTodo();
   }
   
-  function handleOpenDialog() {
-    // Dispatch a custom event that the layout will listen for
-    const event = new CustomEvent('open-add-todo-dialog');
-    window.dispatchEvent(event);
-  }
-  
   onMount(() => {
     updateCurrentTodo();
     
@@ -51,7 +45,7 @@
 
 <div class="focus-mode">
   <FocusedTodo bind:todo={currentTodo} />
-  <AddTodoButton onOpenDialog={handleOpenDialog} />
+  <AddTodoButton />
 </div>
 
 <style>
