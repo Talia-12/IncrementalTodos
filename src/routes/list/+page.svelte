@@ -24,7 +24,7 @@
     
     {#if $todaysTodos.length > 0}
       <div class="todo-list">
-        {#each $todaysTodos as todo (todo.id)}
+        {#each [...$todaysTodos].sort((a, b) => (b.priority ?? 3) - (a.priority ?? 3)) as todo (todo.id)}
           <TodoListItem {todo} />
         {/each}
       </div>
