@@ -104,7 +104,7 @@ function createTodoStore() {
       update(todos => {
         const updatedTodos = todos.map(todo => {
           if (todo.id === id) {
-            const newCheckDate = todo.nextCheckDate;
+            const newCheckDate = new Date(todo.nextCheckDate);
             newCheckDate.setDate(newCheckDate.getDate() + days);
             return { ...todo, nextCheckDate: newCheckDate, delayDays: todo.delayDays * deferMultiplier };
           }
