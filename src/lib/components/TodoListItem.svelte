@@ -12,6 +12,7 @@
   import { getPriorityColor } from '$lib/utils/priority';
   
   export let todo: Todo;
+  let deleteHovered = false;
  
   function toggleComplete() {
     if (todo.completed) {
@@ -54,6 +55,11 @@
     } 
   }
 
+  // Function to delete todo
+  function deleteTodo() {
+    todoStore.deleteTodo(todo.id);
+  }
+  
   // Format defer duration in a human-readable way
   function formatDeferDuration(days: number): string {
     if (days <= 0) return '0 Days';
@@ -91,7 +97,7 @@
   const longDeferString = formatDeferDuration(longDeferDays); 
 </script>
 
-<div class="todo-list-item {todo.completed ? 'completed' : ''}">
+<div class="todo-list-item {todo.completed ? 'completed' : ''} {deleteHovered ? 'delete-hover' : ''}">
   <label class="checkbox-container">
     <input 
       type="checkbox" 
@@ -124,6 +130,7 @@
     {/if}
   </div>
 
+  {#if !todo.completed}
   <div class="defer-buttons">
     <button class="defer-btn" on:click|stopPropagation={() => deferTodo(1)} title="Defer 1 day">
       1d
@@ -138,6 +145,19 @@
       ⟶
     </button>
   </div>
+  {:else}
+  <div class="action-buttons">
+    <button 
+      class="delete-btn" 
+      on:click|stopPropagation={deleteTodo} 
+      on:mouseenter={() => deleteHovered = true}
+      on:mouseleave={() => deleteHovered = false}
+      title="Delete todo"
+    >
+      Delete
+    </button>
+  </div>
+  {/if}
 </div>
 
 <style>
@@ -285,5 +305,32 @@
     background-color: var(--surface-hover);
     border-color: var(--border-hover);
     color: var(--text-hover);
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-left: var(--spacing-md);
+  }
+  
+  .delete-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--danger-dark);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  
+  .delete-btn:hover {
+    background-color: var(--danger-dark);
+    box-shadow: var(--shadow-md);
+  }
+
+  .todo-list-item.delete-hover {
+    background-color: var(--danger);
+    transition: background-color var(--transition-fast);
   }
 </style> 

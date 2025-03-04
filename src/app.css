@@ -211,15 +211,13 @@ nav a {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
   transition: all var(--transition-fast);
-  /* background-color: var(--surface-alt); */
-  border: 1px solid var(--border);
+  border: 1px solid #FFFFFF00;
 }
 
 nav a.active {
   background-color: var(--surface-selected);
   border-color: var(--border-selected);
   color: var(--text-primary);
-  /* font-weight: 500; */
 }
 
 nav a:hover {
