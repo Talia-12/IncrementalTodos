@@ -1,9 +1,6 @@
-use tauri::Builder;
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-	Builder::default()
-		.plugin(tauri_plugin_global_shortcut::Builder::new().build())
+ 	tauri::Builder::default()
 		.setup(|app| {
 			if cfg!(debug_assertions) {
 				app.handle().plugin(

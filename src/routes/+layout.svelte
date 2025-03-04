@@ -14,6 +14,7 @@
   import AddTodoDialog from '$lib/components/AddTodoDialog.svelte';
   import { onMount, onDestroy } from 'svelte';
   import { register } from '@tauri-apps/plugin-global-shortcut';
+  import { initializeLogging } from '$lib/utils/logging';
   import '../app.css';
   
   let dialogOpen = false;
@@ -68,6 +69,11 @@
   }
   
   onMount(() => {
+    // Initialize logging as early as possible
+    initializeLogging().catch(err => {
+      console.error('Failed to initialize logging:', err);
+    });
+    
     // Use capture phase (true as third parameter) to intercept before browser defaults
     document.addEventListener('keydown', handleKeydown, true);
     window.addEventListener('open-add-todo-dialog', handleCustomEvent);
