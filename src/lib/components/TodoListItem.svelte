@@ -12,7 +12,7 @@
   import { getPriorityColor } from '$lib/utils/priority';
   
   export let todo: Todo;
-  
+ 
   function toggleComplete() {
     if (todo.completed) {
       // If already completed, we're uncompleting it
@@ -29,6 +29,66 @@
       minute: '2-digit'
     });
   }
+
+  // Function to defer todo
+  function deferTodo(days: number | string) {
+    if (todo) {
+      // Calculate delay multiplier based on priority
+      // Priority 1 (low) = 1.5x delay
+      // Priority 3 (medium) = 1x delay  
+      // Priority 5 (high) = 0.75x delay
+      const priorityMultiplier = todo.priority 
+        ? 1.5 - ((todo.priority - 1) * 0.1875) 
+        : 1;
+      
+      if (typeof days === 'number') {
+        // Defer by a fixed number of days - this shouldn't be
+        // affected by priority multiplier since we want the actual
+        // deferred days to be the same as the displayed days
+        todoStore.deferTodo(todo.id, days, 1.05);
+      } else if (days === 'short') {
+        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier, 1.2);
+      } else if (days === 'long') {
+        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier * 2, 1.5);
+      }
+    } 
+  }
+
+  // Format defer duration in a human-readable way
+  function formatDeferDuration(days: number): string {
+    if (days <= 0) return '0 Days';
+    
+    const years = Math.floor(days / 365);
+    const remainingDaysAfterYears = days % 365;
+    const months = Math.floor(remainingDaysAfterYears / 30);
+    const remainingDays = Math.floor(remainingDaysAfterYears % 30);
+    
+    let result = '';
+    
+    if (years > 0) {
+      result += `${years} ${years === 1 ? 'Year' : 'Years'}`;
+      if (months > 0) result += ', ';
+    }
+    
+    if (months > 0) {
+      result += `${months} ${months === 1 ? 'Month' : 'Months'}`;
+      if (remainingDays > 0) result += ', ';
+    }
+    
+    if (remainingDays > 0 || (years === 0 && months === 0)) {
+      result += `${remainingDays} ${remainingDays === 1 ? 'Day' : 'Days'}`;
+    }
+    
+    return result;
+  }
+
+  // Calculate short and long defer durations
+  const shortDeferDays = Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 1.2);
+  const longDeferDays = Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 2);
+  
+  // Short and long defer strings
+  const shortDeferString = formatDeferDuration(shortDeferDays);
+  const longDeferString = formatDeferDuration(longDeferDays); 
 </script>
 
 <div class="todo-list-item {todo.completed ? 'completed' : ''}">
@@ -63,14 +123,32 @@
       </div>
     {/if}
   </div>
+
+  <div class="defer-buttons">
+    <button class="defer-btn" on:click|stopPropagation={() => deferTodo(1)} title="Defer 1 day">
+      1d
+    </button>
+    <button class="defer-btn" on:click|stopPropagation={() => deferTodo(7)} title="Defer 7 days">
+      7d
+    </button>
+    <button class="defer-btn" on:click|stopPropagation={() => deferTodo('short')} title={shortDeferString}>
+      →
+    </button>
+    <button class="defer-btn" on:click|stopPropagation={() => deferTodo('long')} title={longDeferString}>
+      ⟶
+    </button>
+  </div>
 </div>
 
 <style>
   .todo-list-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     padding: var(--spacing-sm) var(--spacing-md);
     border-bottom: 1px solid var(--border);
+    &:last-child {
+      border-bottom: none;
+    }
     transition: background-color var(--transition-fast);
   }
   
@@ -85,7 +163,9 @@
   
   .checkbox-container {
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-width: 24px;
     height: 24px;
     margin-right: var(--spacing-md);
@@ -143,12 +223,15 @@
   
   .todo-content {
     flex: 1;
+    min-width: 0; /* Allow content to shrink below its minimum content size */
   }
   
   .todo-title {
     display: flex;
     align-items: center;
     margin-bottom: var(--spacing-xs);
+    word-wrap: break-word;
+    word-break: break-word;
   }
   
   .priority-indicator {
@@ -163,21 +246,44 @@
   .title-text {
     font-weight: 500;
     color: var(--text-primary);
+    word-wrap: break-word;
+    word-break: break-word;
   }
   
   .todo-details {
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
     margin-bottom: var(--spacing-xs);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    word-wrap: break-word;
+    word-break: break-word;
   }
   
   .completed-at {
     font-size: var(--font-size-xs);
     color: var(--text-tertiary);
     font-style: italic;
+  }
+
+  .defer-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-left: var(--spacing-md);
+  }
+
+  .defer-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .defer-btn:hover {
+    background-color: var(--surface-hover);
+    border-color: var(--border-dark);
+    color: var(--text-primary);
   }
 </style> 

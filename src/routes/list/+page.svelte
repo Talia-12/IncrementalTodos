@@ -66,27 +66,27 @@
   h2 {
     margin-top: 0;
     margin-bottom: 16px;
-    color: #333;
+    color: var(--text-primary);
     font-size: 20px;
     font-weight: 600;
     padding-bottom: 8px;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--border);
   }
   
   .todo-list {
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
     overflow: hidden;
   }
   
   .empty-state {
     background-color: white;
     border-radius: 8px;
+    border: 1px solid var(--border);
     padding: 24px;
     text-align: center;
-    color: #888;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: var(--text-secondary);
   }
   
   .empty-state p {
