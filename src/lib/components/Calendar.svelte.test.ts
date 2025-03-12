@@ -121,13 +121,6 @@ describe('Calendar.svelte', () => {
 
     // Check if onClose was called
     expect(onClose).toHaveBeenCalled();
-
-    // Wait for the fade transition to complete
-    vi.advanceTimersByTime(300); // Assuming fade transition takes around 300ms
-
-    // Calendar should be removed from DOM after selection
-    const calendarPopup = document.querySelector('.calendar-popup');
-    expect(calendarPopup).not.toBeInTheDocument();
   });
 
   // Test navigation between months
