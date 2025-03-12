@@ -92,7 +92,7 @@ describe('FocusedTodo.svelte', () => {
     const deferButton = screen.getByText('1 Day');
     await fireEvent.click(deferButton);
     
-    // Assert
+    // Assert - fixed to use the fixed multiplier (1.05) from the implementation
     expect(todoStore.todoStore.deferTodo).toHaveBeenCalledWith('1', 1, 1.05);
   });
   
@@ -104,11 +104,11 @@ describe('FocusedTodo.svelte', () => {
     const deferButton = screen.getByText('7 Days');
     await fireEvent.click(deferButton);
     
-    // Assert
+    // Assert - fixed to use the fixed multiplier (1.05) from the implementation
     expect(todoStore.todoStore.deferTodo).toHaveBeenCalledWith('1', 7, 1.05);
   });
   
-  // Test the menu functionality
+  // Test the menu functionality - fixed to use a more reliable approach
   test('should open menu when menu button is clicked', async () => {
     // Arrange
     render(FocusedTodo, { props: { todo: mockTodo } });
@@ -120,7 +120,7 @@ describe('FocusedTodo.svelte', () => {
     // Assert
     expect(screen.getByText('Delete Todo')).toBeInTheDocument();
     
-    // Use a more flexible selector with regex to find the button containing 'Update Priority'
+    // More flexible way to check for the priority update button
     const priorityButton = screen.getByRole('button', { 
       name: /Update Priority/i 
     });
@@ -162,5 +162,56 @@ describe('FocusedTodo.svelte', () => {
     
     // Assert
     expect(todoStore.todoStore.deleteTodo).toHaveBeenCalledWith('1');
+  });
+  
+  // Add test for keyboard shortcuts
+  test('should complete todo when Space key is pressed', async () => {
+    // Arrange
+    render(FocusedTodo, { props: { todo: mockTodo } });
+    
+    // Act - simulate space key press
+    const container = document.body;
+    await fireEvent.keyDown(container, { key: ' ' });
+    
+    // Assert
+    expect(todoStore.todoStore.completeTodo).toHaveBeenCalledWith('1');
+  });
+  
+  test('should defer todo when number keys 1-4 are pressed', async () => {
+    // Arrange
+    render(FocusedTodo, { props: { todo: mockTodo } });
+    
+    // Act & Assert - test key 1
+    await fireEvent.keyDown(document.body, { key: '1' });
+    expect(todoStore.todoStore.deferTodo).toHaveBeenCalledWith('1', 1, 1.05);
+    
+    vi.clearAllMocks();
+    
+    // Act & Assert - test key 2
+    await fireEvent.keyDown(document.body, { key: '2' });
+    expect(todoStore.todoStore.deferTodo).toHaveBeenCalledWith('1', 7, 1.05);
+    
+    vi.clearAllMocks();
+    
+    // Act & Assert - test key 3 (short defer)
+    await fireEvent.keyDown(document.body, { key: '3' });
+    // Calculate the expected priorityMultiplier
+    const priorityMultiplier = mockTodo.priority ? 1.5 - ((mockTodo.priority - 1) * 0.1875) : 1;
+    expect(todoStore.todoStore.deferTodo).toHaveBeenCalledWith(
+      '1', 
+      mockTodo.delayDays * priorityMultiplier, 
+      1.2
+    );
+  });
+  
+  test('should show delete confirmation with Ctrl+Delete shortcut', async () => {
+    // Arrange
+    render(FocusedTodo, { props: { todo: mockTodo } });
+    
+    // Act - simulate Ctrl+Delete key press
+    await fireEvent.keyDown(document.body, { key: 'Delete', ctrlKey: true });
+    
+    // Assert
+    expect(screen.getByText('Are you sure?')).toBeInTheDocument();
   });
 }); 

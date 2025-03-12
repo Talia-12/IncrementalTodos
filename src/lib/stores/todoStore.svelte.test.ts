@@ -176,4 +176,156 @@ describe('derived stores', () => {
     expect(getNextFocusTodo).toBeDefined();
     expect(getNextFocusTodo).toBeInstanceOf(Function);
   });
+  
+  // Add proper tests for todaysTodos filtering logic
+  test('todaysTodos should only include non-completed todos due today or earlier', () => {
+    // Reset store
+    const todos = get(todoStore);
+    todos.forEach(todo => {
+      todoStore.deleteTodo(todo.id);
+    });
+    
+    // Create test date utility
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Add sample todos
+    // 1. Todo due yesterday (should be included)
+    todoStore.addTodo({ title: 'Yesterday Todo', priority: 3 });
+    const yesterdayTodoId = get(todoStore)[0].id;
+    todoStore.updateTodo(yesterdayTodoId, { nextCheckDate: yesterday });
+    
+    // 2. Todo due today (should be included)
+    todoStore.addTodo({ title: 'Today Todo', priority: 3 });
+    const todayTodoId = get(todoStore)[1].id;
+    todoStore.updateTodo(todayTodoId, { nextCheckDate: today });
+    
+    // 3. Todo due tomorrow (should NOT be included)
+    todoStore.addTodo({ title: 'Tomorrow Todo', priority: 3 });
+    const tomorrowTodoId = get(todoStore)[2].id;
+    todoStore.updateTodo(tomorrowTodoId, { nextCheckDate: tomorrow });
+    
+    // 4. Completed todo due today (should NOT be included)
+    todoStore.addTodo({ title: 'Completed Todo', priority: 3 });
+    const completedTodoId = get(todoStore)[3].id;
+    todoStore.updateTodo(completedTodoId, { nextCheckDate: today });
+    todoStore.completeTodo(completedTodoId);
+    
+    // Check todaysTodos
+    const filtered = get(todaysTodos);
+    expect(filtered.length).toBe(2);
+    expect(filtered.find(t => t.title === 'Yesterday Todo')).toBeDefined();
+    expect(filtered.find(t => t.title === 'Today Todo')).toBeDefined();
+    expect(filtered.find(t => t.title === 'Tomorrow Todo')).toBeUndefined();
+    expect(filtered.find(t => t.title === 'Completed Todo')).toBeUndefined();
+  });
+  
+  // Add proper tests for completedToday filtering logic
+  test('completedToday should only include todos completed today', () => {
+    // Reset store
+    const todos = get(todoStore);
+    todos.forEach(todo => {
+      todoStore.deleteTodo(todo.id);
+    });
+    
+    // Create test date utility
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    // Setup: create a few todos and complete them at different times
+    
+    // 1. Todo completed today
+    todoStore.addTodo({ title: 'Completed Today', priority: 3 });
+    const todayCompletedId = get(todoStore)[0].id;
+    todoStore.completeTodo(todayCompletedId);
+    
+    // Mock completedAt date for yesterday (via direct update)
+    // 2. Todo completed yesterday
+    todoStore.addTodo({ title: 'Completed Yesterday', priority: 3 });
+    const yesterdayCompletedId = get(todoStore)[1].id;
+    todoStore.completeTodo(yesterdayCompletedId);
+    todoStore.updateTodo(yesterdayCompletedId, { completedAt: yesterday });
+    
+    // 3. Uncompleted todo
+    todoStore.addTodo({ title: 'Not Completed', priority: 3 });
+    
+    // Check completedToday
+    const filtered = get(completedToday);
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].title).toBe('Completed Today');
+  });
+  
+  // Add proper test for getNextFocusTodo function
+  test('getNextFocusTodo should return the earliest due todo', () => {
+    // Reset store
+    const todos = get(todoStore);
+    todos.forEach(todo => {
+      todoStore.deleteTodo(todo.id);
+    });
+    
+    // Create test dates with different times
+    const now = new Date();
+    
+    const earliestDate = new Date(now);
+    earliestDate.setHours(now.getHours() - 2);
+    
+    const middleDate = new Date(now);
+    middleDate.setHours(now.getHours() - 1);
+    
+    const latestDate = new Date(now);
+    latestDate.setHours(now.getHours() + 1);
+    
+    // Add todos in reverse order of due dates
+    todoStore.addTodo({ title: 'Latest Todo', priority: 5 });
+    const latestId = get(todoStore)[0].id;
+    todoStore.updateTodo(latestId, { nextCheckDate: latestDate });
+    
+    todoStore.addTodo({ title: 'Middle Todo', priority: 3 });
+    const middleId = get(todoStore)[1].id;
+    todoStore.updateTodo(middleId, { nextCheckDate: middleDate });
+    
+    todoStore.addTodo({ title: 'Earliest Todo', priority: 1 });
+    const earliestId = get(todoStore)[2].id;
+    todoStore.updateTodo(earliestId, { nextCheckDate: earliestDate });
+    
+    // Check getNextFocusTodo returns the earliest todo regardless of priority or creation order
+    const nextTodo = getNextFocusTodo();
+    expect(nextTodo).not.toBeNull();
+    expect(nextTodo?.title).toBe('Earliest Todo');
+    
+    // Complete the earliest todo and verify the middle one becomes next
+    todoStore.completeTodo(earliestId);
+    const newNextTodo = getNextFocusTodo();
+    expect(newNextTodo).not.toBeNull();
+    expect(newNextTodo?.title).toBe('Middle Todo');
+  });
+  
+  test('getNextFocusTodo should return null when no todos are due', () => {
+    // Reset store
+    const todos = get(todoStore);
+    todos.forEach(todo => {
+      todoStore.deleteTodo(todo.id);
+    });
+    
+    // Add a todo due tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    todoStore.addTodo({ title: 'Future Todo', priority: 3 });
+    const futureId = get(todoStore)[0].id;
+    todoStore.updateTodo(futureId, { nextCheckDate: tomorrow });
+    
+    // Check getNextFocusTodo returns null since no todos are due today
+    const nextTodo = getNextFocusTodo();
+    expect(nextTodo).toBeNull();
+  });
 }); 

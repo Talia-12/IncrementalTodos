@@ -9,7 +9,7 @@
 // @vitest-environment jsdom
 import { describe, test, expect, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, fireEvent } from '@testing-library/svelte';
 import AddTodoButton from './AddTodoButton.svelte';
 
 describe('AddTodoButton.svelte', () => {
@@ -46,5 +46,34 @@ describe('AddTodoButton.svelte', () => {
     // Check for the two lines that make the plus sign
     const lines = document.querySelectorAll('line');
     expect(lines.length).toBe(2);
+  });
+  
+  // Test that the button dispatches a custom event when clicked
+  test('should dispatch custom event when clicked', async () => {
+    // Arrange
+    render(AddTodoButton);
+    const dispatchEventSpy = vi.spyOn(window, 'dispatchEvent');
+    
+    // Act
+    const button = screen.getByRole('button', { name: 'Add new todo' });
+    await fireEvent.click(button);
+    
+    // Assert
+    expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('open-add-todo-dialog');
+  });
+  
+  // Test that the provided onOpenDialog callback is called when clicked
+  test('should call provided onOpenDialog prop when clicked', async () => {
+    // Arrange
+    const mockCallback = vi.fn();
+    render(AddTodoButton, { props: { onOpenDialog: mockCallback } });
+    
+    // Act
+    const button = screen.getByRole('button', { name: 'Add new todo' });
+    await fireEvent.click(button);
+    
+    // Assert
+    expect(mockCallback).toHaveBeenCalledTimes(1);
   });
 }); 
