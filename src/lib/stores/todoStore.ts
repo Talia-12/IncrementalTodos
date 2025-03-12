@@ -139,9 +139,6 @@ export const todaysTodos = derived(todoStore, $todos => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
   return $todos.filter(todo => {
     const nextCheckDate = new Date(todo.nextCheckDate);
     nextCheckDate.setHours(0, 0, 0, 0);

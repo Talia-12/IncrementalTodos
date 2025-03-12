@@ -24,6 +24,19 @@ const localStorageMock = (() => {
   };
 })();
 
+const mockUUIDs = [
+    '123e4567-e89b-12d3-a456-426614174000',
+    '123e4567-e89b-12d3-a456-426614174001',
+    '123e4567-e89b-12d3-a456-426614174002',
+    '123e4567-e89b-12d3-a456-426614174003',
+    '123e4567-e89b-12d3-a456-426614174004',
+    '123e4567-e89b-12d3-a456-426614174005',
+    '123e4567-e89b-12d3-a456-426614174006',
+    '123e4567-e89b-12d3-a456-426614174007',
+    '123e4567-e89b-12d3-a456-426614174008',
+    '123e4567-e89b-12d3-a456-426614174009',
+];
+
 // Setup global mocks
 beforeEach(() => {
   // Set up global localStorage before each test
@@ -38,13 +51,17 @@ beforeEach(() => {
   
   // Mock the randomUUID function
   vi.stubGlobal('crypto', {
-    randomUUID: vi.fn(() => '123e4567-e89b-12d3-a456-426614174000'),
+    randomUUID: vi.fn(() => {      
+      const callCount = vi.mocked(crypto.randomUUID).mock.calls.length;
+      if (callCount >= 10) {
+        throw new Error('Too many UUIDs requested');
+      }
+      return mockUUIDs[callCount - 1];
+    }),
   });
 });
 
 describe('todoStore', () => {
-  const mockUUID = '123e4567-e89b-12d3-a456-426614174000';
-  
   beforeEach(() => {
     // Clear localStorage and reset mocks before each test
     localStorageMock.clear();
@@ -73,7 +90,7 @@ describe('todoStore', () => {
     // Assert
     const todos = get(todoStore);
     expect(todos.length).toBe(1);
-    expect(todos[0].id).toBe(mockUUID);
+    expect(todos[0].id).toBe(mockUUIDs[0]);
     expect(todos[0].title).toBe('Test Todo');
     expect(todos[0].details).toBe('This is a test');
     expect(todos[0].completed).toBe(false);
