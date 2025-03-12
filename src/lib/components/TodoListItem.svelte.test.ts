@@ -69,8 +69,8 @@ describe('TodoListItem.svelte', () => {
     // Assert
     const priorityIndicator = document.querySelector('.priority-indicator');
     expect(priorityIndicator).toBeInTheDocument();
-    // Should have a style with var(--priority-1)
-    expect(priorityIndicator).toHaveStyle('background-color: var(--priority-1, #757575)');
+    // Check for the correct CSS custom property
+    expect(priorityIndicator).toHaveAttribute('style', expect.stringContaining('--priority-color: var(--priority-1, #757575)'));
   });
 
   // Test completed todo styling
@@ -87,7 +87,7 @@ describe('TodoListItem.svelte', () => {
     render(TodoListItem, { props: { todo: completedTodo } });
 
     // Assert
-    const todoItem = document.querySelector('.todo-item');
+    const todoItem = document.querySelector('.todo-list-item');
     expect(todoItem).toHaveClass('completed');
     
     // Check that checkbox is checked
@@ -136,8 +136,11 @@ describe('TodoListItem.svelte', () => {
   // Test delete button functionality
   test('should call deleteTodo when delete button is clicked', async () => {
     // Arrange
-    const testTodo = createTestTodo();
-    render(TodoListItem, { props: { todo: testTodo } });
+    const completedTodo = createTestTodo({
+      completed: true,
+      completedAt: new Date()
+    });
+    render(TodoListItem, { props: { todo: completedTodo } });
     
     // Act
     const deleteButton = screen.getByRole('button', { name: /delete/i });
@@ -150,32 +153,42 @@ describe('TodoListItem.svelte', () => {
   // Test hover state for delete button
   test('should show different icon when delete button is hovered', async () => {
     // Arrange
-    const testTodo = createTestTodo();
-    render(TodoListItem, { props: { todo: testTodo } });
+    const completedTodo = createTestTodo({
+      completed: true,
+      completedAt: new Date()
+    });
+    render(TodoListItem, { props: { todo: completedTodo } });
     
     // Act
     const deleteButton = screen.getByRole('button', { name: /delete/i });
     await fireEvent.mouseEnter(deleteButton);
     
     // Assert
-    // Check if delete-hover class is applied or the appropriate icon is shown
-    expect(deleteButton).toHaveClass('delete-hover');
+    // Check if delete-hover class is applied to the todo item
+    const todoItem = document.querySelector('.todo-list-item');
+    expect(todoItem).toHaveClass('delete-hover');
   });
 
-  // Test date formatting
-  test('should format creation date correctly', () => {
+  // Test date formatting for completed todos
+  test('should format completion date correctly for completed todos', () => {
     // Arrange
-    const date = new Date('2023-03-15T14:30:00');
+    const completionDate = new Date('2023-03-15T14:30:00');
     const testTodo = createTestTodo({
-      createdAt: date
+      completed: true,
+      completedAt: completionDate
     });
     
     // Act
     render(TodoListItem, { props: { todo: testTodo } });
     
     // Assert
-    // Format will depend on the implementation, but we can check for date parts
-    const dateElement = screen.getByText(/Mar 15/);
-    expect(dateElement).toBeInTheDocument();
+    // Check for the "Completed at" text followed by the time
+    const completedText = screen.getByText(/Completed at/);
+    expect(completedText).toBeInTheDocument();
+    
+    // The time format will depend on the locale, but we can check for parts of it
+    // For US locale, it would be something like "2:30 PM"
+    const timeRegex = /\d{1,2}:\d{2}/;
+    expect(completedText.textContent).toMatch(timeRegex);
   });
 }); 

@@ -16,7 +16,6 @@
   export let open = false;
   export let disabled = false;
   export let placeholder = "Select date...";
-  export let format = "MMMM d, yyyy";
   export let onChange = (date: Date) => {};
   export let onOpen = () => {};
   export let onClose = () => {};
