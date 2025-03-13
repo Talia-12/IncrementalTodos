@@ -34,6 +34,8 @@ export class HippocampusServiceImpl implements HippocampusService {
     return { success: true };
   }
   
+  // This queries the server for the Todo item type
+  // if it doesn't exist, it creates it
   public async getTodoItemType(): Promise<ServiceResponse<ItemType>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -51,6 +53,9 @@ export class HippocampusServiceImpl implements HippocampusService {
     };
   }
   
+  // This creates a new todo item in the server, returning the item
+  // the server will create a card for the todo item
+  // we will then need to query again to get the created card so we can return it
   public async createTodo(title: string, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -64,6 +69,8 @@ export class HippocampusServiceImpl implements HippocampusService {
     };
   }
   
+  // This gets all todo items from the server, returning an array of items and cards
+  // this is done by querying the server for all items and then for each item, querying the server for the card
   public async getAllTodos(): Promise<ServiceResponse<Array<{item: Item, card: Card}>>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -77,6 +84,9 @@ export class HippocampusServiceImpl implements HippocampusService {
     };
   }
   
+  // This gets all todo items from the server that are due for review
+  // this is done by querying the server for all items, and then for each item, querying the server for the card
+  // and then filtering them by due date
   public async getDueTodos(): Promise<ServiceResponse<Array<{item: Item, card: Card}>>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -90,6 +100,8 @@ export class HippocampusServiceImpl implements HippocampusService {
     };
   }
   
+  // This completes a todo item by suspending its card
+  // the server will then stop reviewing the todo item
   public async completeTodo(itemId: string, cardId: string): Promise<ServiceResponse<Card>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -103,6 +115,8 @@ export class HippocampusServiceImpl implements HippocampusService {
     };
   }
   
+  // This reschedules a todo item by creating a review
+  // the server will then review the todo item again at the specified interval
   public async rescheduleTodo(cardId: string, rating: number): Promise<ServiceResponse<Review>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -115,7 +129,8 @@ export class HippocampusServiceImpl implements HippocampusService {
       error: "Not implemented" 
     };
   }
-  
+
+  // This updates a todo item by updating the item and the card
   public async updateTodo(itemId: string, title: string, data: TodoItemData): Promise<ServiceResponse<Item>> {
     // This will be implemented with actual API communication
     // Placeholder implementation
@@ -128,7 +143,8 @@ export class HippocampusServiceImpl implements HippocampusService {
       error: "Not implemented" 
     };
   }
-  
+
+  // This gets the card for a todo item
   public async getCardForTodo(itemId: string): Promise<ServiceResponse<Card>> {
     // This will be implemented with actual API communication
     // Placeholder implementation

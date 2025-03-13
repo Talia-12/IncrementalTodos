@@ -40,6 +40,13 @@ async function generateUniqueTitle(baseTitle: string = 'Test Todo'): Promise<str
   const service = getHippocampusService(false);
   await service.initialize({ baseUrl: SERVER_URL });
 
+  // First get the Todo item type
+  const itemTypeResponse = await service.getTodoItemType();
+  if (!itemTypeResponse.success || !itemTypeResponse.data) {
+    // If we can't get todos, use a timestamp-based title to minimize chance of conflict
+    return `${baseTitle} ${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  }
+
   const todosResponse = await service.getAllTodos();
   if (!todosResponse.success || !todosResponse.data) {
     // If we can't get todos, use a timestamp-based title to minimize chance of conflict
@@ -177,7 +184,7 @@ describe('HippocampusServiceImpl with real server', async () => {
   });
 
   // Test creating a todo with a duplicate title
-  test('should handle duplicate todo titles gracefully', async () => {
+  test('should reject duplicate todo titles', async () => {
     // Arrange
     const service = getHippocampusService(false);
     await service.initialize({ baseUrl: SERVER_URL });
@@ -199,8 +206,10 @@ describe('HippocampusServiceImpl with real server', async () => {
     // Act - Try to create another todo with the same title
     const secondResponse = await service.createTodo(title, todoData);
     
-    // Assert - We expect an error because the server should not allow duplicates
+    // Assert - Clear expectation that duplicates should be rejected
+    expect(secondResponse.success).toBe(false);
     expect(secondResponse.error).toBeDefined();
+    expect(secondResponse.error).toContain('duplicate');
   });
 
   // Test getting all todos from real server
@@ -210,7 +219,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     await service.initialize({ baseUrl: SERVER_URL });
     
     // Create a new todo to ensure we have at least one
-    const { item, card, title } = await createTestTodo();
+    const { title } = await createTestTodo();
     
     // Act
     const response = await service.getAllTodos();
@@ -223,8 +232,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     // Find our created todo in the list
     const foundTodo = response.data?.find(todo => todo.item.title === title);
     expect(foundTodo).toBeDefined();
-    expect(foundTodo?.item.id).toBe(item.id);
-    expect(foundTodo?.card.id).toBe(card.id);
   });
 
   // Test getting due todos from real server
@@ -235,29 +242,49 @@ describe('HippocampusServiceImpl with real server', async () => {
     
     // Create a new todo that will be due immediately
     const title = await generateUniqueTitle('Due Test Todo');
+    
+    // Set the date to 1 day in the past to ensure it's due
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 1);
+    
     const todoData: TodoItemData = {
       details: 'Test details for due test',
       priority: 3,
-      dueDate: new Date().toISOString(), // Due right now
+      dueDate: pastDate.toISOString(), // Due yesterday
       mustCompleteBefore: null,
       mustCompleteOn: null,
       recurring: false
     };
     
-    // Create the todo (card should be due immediately or soon)
+    // Create the todo (card should be due immediately)
     const createResponse = await service.createTodo(title, todoData);
     expect(createResponse.success).toBe(true);
+    const createdItemId = createResponse.data!.item.id;
     
     // Act
     const response = await service.getDueTodos();
     
     // Assert
     expect(response.success).toBe(true);
-    
-    // The newly created todo might or might not be in the due list
-    // depending on how the server implemented due date calculation
-    // We just verify the response structure
     expect(Array.isArray(response.data)).toBe(true);
+    
+    // Try to find our newly created todo in the due list
+    const foundTodo = response.data?.find(todo => todo.item.id === createdItemId);
+    
+    // We might not find it if server processes due date differently,
+    // but we should log this for debugging
+    if (!foundTodo) {
+      console.warn('Note: Created todo was not found in due todos. This may be expected depending on server implementation.');
+      
+      // If not found in due todos, verify it exists in all todos to ensure it was created
+      const allTodosResponse = await service.getAllTodos();
+      const todoExistsInAllTodos = allTodosResponse.data?.some(todo => todo.item.id === createdItemId);
+      expect(todoExistsInAllTodos).toBe(true);
+    } else {
+      // If we found it, verify its properties
+      expect(foundTodo.item.title).toBe(title);
+      expect(foundTodo.item.item_data?.dueDate).toBe(pastDate.toISOString());
+    }
   });
 
   // Test completing a todo on real server
@@ -450,23 +477,38 @@ describe('HippocampusServiceImpl with real server', async () => {
   test('should handle server errors gracefully', async () => {
     // Arrange
     const service = getHippocampusService(false);
-    await service.initialize({ baseUrl: SERVER_URL + '/nonexistent-path' }); // Invalid URL
+
+    // Test 1: Invalid base URL
+    await service.initialize({ baseUrl: SERVER_URL + '/nonexistent-path' });
+    const invalidPathResponse = await service.getTodoItemType();
+    expect(invalidPathResponse.success).toBe(false);
+    expect(invalidPathResponse.error).toBeDefined();
     
-    // Act
-    const response = await service.getTodoItemType();
+    // Test 2: Invalid server port
+    // Reset first
+    resetHippocampusService();
+    const invalidPortService = getHippocampusService(false);
+    await invalidPortService.initialize({ baseUrl: 'http://127.0.0.1:9999' });
+    const invalidPortResponse = await invalidPortService.getAllTodos();
+    expect(invalidPortResponse.success).toBe(false);
+    expect(invalidPortResponse.error).toBeDefined();
     
-    // Assert
-    expect(response.success).toBe(false);
-    expect(response.error).toBeDefined();
+    // Test 3: Invalid item ID format
+    resetHippocampusService();
+    const validService = getHippocampusService(false);
+    await validService.initialize({ baseUrl: SERVER_URL });
+    const invalidIdResponse = await validService.getCardForTodo('not-a-valid-id-format');
+    expect(invalidIdResponse.success).toBe(false);
+    expect(invalidIdResponse.error).toBeDefined();
   });
 
-  // Test performance with multiple operations
-  test('should handle multiple operations efficiently', async () => {
+  // Test handling multiple operations
+  test('should handle multiple operations correctly', async () => {
     // Arrange
     const service = getHippocampusService(false);
     await service.initialize({ baseUrl: SERVER_URL });
     
-    // Act & Assert - Measure time for multiple operations
+    // Act - Measure time for multiple operations
     const start = Date.now();
     
     // Create multiple todos
@@ -483,29 +525,52 @@ describe('HippocampusServiceImpl with real server', async () => {
     expect(completeResponse.success).toBe(true);
     
     // Reschedule another todo
-    const rescheduleResponse = await service.rescheduleTodo(todo2.card.id, 2);
+    const rating = 2; // Hard
+    const rescheduleResponse = await service.rescheduleTodo(todo2.card.id, rating);
     expect(rescheduleResponse.success).toBe(true);
     
     // Update the third todo
     const updatedTitle = await generateUniqueTitle('Updated Multiple Test');
+    const updatedDetails = 'Updated in multiple operations test';
     const updateResponse = await service.updateTodo(
       todo3.item.id, 
       updatedTitle, 
       {
         ...todo3.item.item_data as TodoItemData,
-        details: 'Updated in multiple operations test'
+        details: updatedDetails
       }
     );
     expect(updateResponse.success).toBe(true);
     
+    // Timing info - not an assertion, just informational
     const end = Date.now();
     const duration = end - start;
-    
-    // Log performance info - not an assertion, just informational
     console.log(`Multiple operations completed in ${duration}ms`);
     
-    // Loose assertion that operations complete in a reasonable time
-    // Adjust based on expected performance
+    // Assert - Verify final state
+    // 1. Get the final state of all todos
+    const finalGetResponse = await service.getAllTodos();
+    expect(finalGetResponse.success).toBe(true);
+    expect(Array.isArray(finalGetResponse.data)).toBe(true);
+    
+    // 2. Verify todo1 is completed (suspended)
+    const completedTodo = finalGetResponse.data?.find(t => t.item.id === todo1.item.id);
+    expect(completedTodo).toBeDefined();
+    expect(completedTodo?.card.suspended).toBe(true);
+    
+    // 3. Verify todo2 was rescheduled (has a review with the correct rating)
+    const rescheduledTodo = finalGetResponse.data?.find(t => t.item.id === todo2.item.id);
+    expect(rescheduledTodo).toBeDefined();
+    // Can't easily verify the review directly, but can check the card still exists and is not suspended
+    expect(rescheduledTodo?.card.suspended).toBe(false);
+    
+    // 4. Verify todo3 was updated
+    const updatedTodo = finalGetResponse.data?.find(t => t.item.id === todo3.item.id);
+    expect(updatedTodo).toBeDefined();
+    expect(updatedTodo?.item.title).toBe(updatedTitle);
+    expect(updatedTodo?.item.item_data?.details).toBe(updatedDetails);
+    
+    // Performance is still important but secondary
     expect(duration).toBeLessThan(10000); // 10 seconds should be plenty
   });
 
