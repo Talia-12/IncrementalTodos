@@ -42,6 +42,8 @@
 	},
 	"dependencies": {
 		"@tauri-apps/plugin-log": "^2.2.3",
-		"bits-ui": "^1.3.5"
+		"@types/node-fetch": "^2.6.12",
+		"bits-ui": "^1.3.5",
+		"node-fetch": "^2.7.0"
 	}
 }

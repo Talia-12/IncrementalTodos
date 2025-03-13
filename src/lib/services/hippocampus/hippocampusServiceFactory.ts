@@ -10,7 +10,8 @@ import type { HippocampusService } from './hippocampusService';
 import { HippocampusServiceImpl } from './hippocampusServiceImpl';
 import { MockHippocampusService } from './mockHippocampusService';
 
-let instance: HippocampusService | null = null;
+let mockInstance: HippocampusService | null = null;
+let realInstance: HippocampusService | null = null;
 
 /**
  * Creates or returns an existing instance of the HippocampusService
@@ -18,17 +19,26 @@ let instance: HippocampusService | null = null;
  * @returns A HippocampusService implementation
  */
 export function getHippocampusService(useMock = false): HippocampusService {
-  if (!instance) {
-    instance = useMock 
-      ? new MockHippocampusService() 
-      : new HippocampusServiceImpl();
+  if (useMock) {
+    if (!mockInstance) {
+      mockInstance = new MockHippocampusService();
+    }
+    return mockInstance;
+  } else {
+    if (!realInstance) {
+      realInstance = new HippocampusServiceImpl();
+    }
+    return realInstance;
   }
-  return instance;
 }
 
 /**
- * Resets the singleton instance, primarily used for testing
+ * Resets the singleton instances, primarily used for testing
+ * @param mockOnly - Whether to reset only the mock instance
  */
-export function resetHippocampusService(): void {
-  instance = null;
-} 
+export function resetHippocampusService(mockOnly = false): void {
+  mockInstance = null;
+  if (!mockOnly) {
+    realInstance = null;
+  }
+}

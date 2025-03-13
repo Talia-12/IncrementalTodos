@@ -63,7 +63,7 @@ export interface HippocampusService {
   /**
    * Reschedule a todo by creating a review
    * @param cardId - ID of the card to review
-   * @param rating - Rating indicating how well the todo was remembered/handled
+   * @param rating - Rating indicating how long to wait before reviewing the todo again
    * @returns The created review
    */
   rescheduleTodo(cardId: string, rating: number): Promise<ServiceResponse<Review>>;
