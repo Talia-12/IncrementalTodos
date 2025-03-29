@@ -13,7 +13,6 @@
   import { goto } from '$app/navigation';
   import AddTodoDialog from '$lib/components/AddTodoDialog.svelte';
   import { onMount, onDestroy } from 'svelte';
-  import { register } from '@tauri-apps/plugin-global-shortcut';
   import { initializeLogging } from '$lib/utils/logging';
   import '../app.css';
   
