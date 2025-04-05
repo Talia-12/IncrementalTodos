@@ -188,13 +188,13 @@ export class HippocampusServiceImpl implements HippocampusService {
   
   // This completes a todo item by suspending its card
   // the server will then stop reviewing the todo item
-  public async completeTodo(itemId: string, cardId: string): Promise<ServiceResponse<Card>> {
+  public async completeTodo(cardId: string): Promise<ServiceResponse<Card>> {
     if (!this.initialized) {
       return { success: false, error: "Service not initialized" };
     }
     
     try {
-      // Update the card to suspend it
+      // TODO: fix this - it doesn't work because suspending isn't setup on the server yet.
       const updatedCard = await this.patchToApi<Card, { suspended: boolean }>(`/cards/${cardId}`, { suspended: true });
       
       return { success: true, data: updatedCard };

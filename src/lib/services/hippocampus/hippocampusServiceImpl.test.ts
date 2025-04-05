@@ -13,6 +13,7 @@ import { describe, test, expect, beforeEach, afterEach, beforeAll, vi } from 'vi
 import { getHippocampusService, resetHippocampusService } from './hippocampusServiceFactory';
 import type { TodoItemData, ItemType, Item, Card, ServiceResponse } from './types';
 import fetch from 'node-fetch';
+import { assert } from 'vitest';
 
 // Configuration for the Hippocampus server
 const SERVER_URL = 'http://127.0.0.1:3000';
@@ -35,14 +36,14 @@ async function isServerRunning(): Promise<boolean> {
  * @param baseTitle - Base title to use
  * @returns Promise that resolves to a unique title
  */
-async function generateUniqueTitle(baseTitle: string = 'Test Todo'): Promise<string> {
+async function generateUniqueTitle(baseTitle: string = 'Test Todo', withTimestamp: boolean = false): Promise<string> {
   // Get existing todos to avoid title conflicts
   const service = getHippocampusService(false);
   await service.initialize({ baseUrl: SERVER_URL });
 
   // First get the Todo item type
   const itemTypeResponse = await service.getTodoItemType();
-  if (!itemTypeResponse.success || !itemTypeResponse.data) {
+  if (!itemTypeResponse.success || !itemTypeResponse.data || withTimestamp) {
     // If we can't get todos, use a timestamp-based title to minimize chance of conflict
     return `${baseTitle} ${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
@@ -297,7 +298,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     const { item, card } = await createTestTodo();
     
     // Act
-    const response = await service.completeTodo(item.id, card.id);
+    const response = await service.completeTodo(card.id);
     
     // Assert
     expect(response.success).toBe(true);
@@ -311,12 +312,11 @@ describe('HippocampusServiceImpl with real server', async () => {
     const service = getHippocampusService(false);
     await service.initialize({ baseUrl: SERVER_URL });
     
-    // Generate fake IDs
-    const fakeItemId = `item-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    // Generate fake ID
     const fakeCardId = `card-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     
     // Act
-    const response = await service.completeTodo(fakeItemId, fakeCardId);
+    const response = await service.completeTodo(fakeCardId);
     
     // Assert
     expect(response.success).toBe(false);
@@ -518,16 +518,16 @@ describe('HippocampusServiceImpl with real server', async () => {
     
     // Get all todos
     const getAllResponse = await service.getAllTodos();
-    expect(getAllResponse.success).toBe(true);
+    assert(getAllResponse.success, 'Failed to get all todos: ' + getAllResponse.error);
     
     // Complete one todo
-    const completeResponse = await service.completeTodo(todo1.item.id, todo1.card.id);
-    expect(completeResponse.success).toBe(true);
+    const completeResponse = await service.completeTodo(todo1.card.id);
+    assert(completeResponse.success, 'Failed to complete todo: ' + completeResponse.error);
     
     // Reschedule another todo
     const rating = 2; // Hard
     const rescheduleResponse = await service.rescheduleTodo(todo2.card.id, rating);
-    expect(rescheduleResponse.success).toBe(true);
+    assert(rescheduleResponse.success, 'Failed to reschedule todo: ' + rescheduleResponse.error);
     
     // Update the third todo
     const updatedTitle = await generateUniqueTitle('Updated Multiple Test');
@@ -618,9 +618,9 @@ describe('HippocampusServiceImpl with real server', async () => {
     await service.initialize({ baseUrl: SERVER_URL });
     
     // Act - Perform multiple operations concurrently
-    const title1 = await generateUniqueTitle('Concurrent Test 1');
-    const title2 = await generateUniqueTitle('Concurrent Test 2');
-    const title3 = await generateUniqueTitle('Concurrent Test 3');
+    const title1 = await generateUniqueTitle('Concurrent Test 1', true);
+    const title2 = await generateUniqueTitle('Concurrent Test 2', true);
+    const title3 = await generateUniqueTitle('Concurrent Test 3', true);
     
     const todoData: TodoItemData = {
       details: 'Test details for concurrent operations',
@@ -643,9 +643,9 @@ describe('HippocampusServiceImpl with real server', async () => {
     ]);
     
     // Assert
-    expect(result1.success).toBe(true);
-    expect(result2.success).toBe(true);
-    expect(result3.success).toBe(true);
-    expect(result4.success).toBe(true);
+    assert(result1.success, `Operation 1 failed: ${result1.error || JSON.stringify(result1)}`);
+    assert(result2.success, `Operation 2 failed: ${result2.error || JSON.stringify(result2)}`);
+    assert(result3.success, `Operation 3 failed: ${result3.error || JSON.stringify(result3)}`);
+    assert(result4.success, `Operation 4 failed: ${result4.error || JSON.stringify(result4)}`);
   });
 }); 

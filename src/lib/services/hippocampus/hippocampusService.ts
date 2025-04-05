@@ -58,7 +58,7 @@ export interface HippocampusService {
    * @param cardId - ID of the card associated with the todo
    * @returns The updated card
    */
-  completeTodo(itemId: string, cardId: string): Promise<ServiceResponse<Card>>;
+  completeTodo(cardId: string): Promise<ServiceResponse<Card>>;
   
   /**
    * Reschedule a todo by creating a review

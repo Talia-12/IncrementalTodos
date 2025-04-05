@@ -182,7 +182,7 @@ export class MockHippocampusService implements HippocampusService {
     return { success: true, data: result };
   }
   
-  public async completeTodo(itemId: string, cardId: string): Promise<ServiceResponse<Card>> {
+  public async completeTodo(cardId: string): Promise<ServiceResponse<Card>> {
     await this.delay();
     
     if (!this.initialized) {
@@ -197,10 +197,6 @@ export class MockHippocampusService implements HippocampusService {
     const card = this.cards.get(cardId);
     if (!card) {
       return { success: false, error: "Card not found" };
-    }
-    
-    if (card.item_id !== itemId) {
-      return { success: false, error: "Card does not belong to this item" };
     }
     
     // Update card to be suspended
