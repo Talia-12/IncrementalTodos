@@ -213,16 +213,16 @@ describe('HippocampusService', () => {
     const cardId = createResponse.data!.card.id;
     
     // Act
-    const completeResponse = await service.completeTodo(itemId, cardId);
+    const completeResponse = await service.completeTodo(cardId);
     
     // Assert
     expect(completeResponse.success).toBe(true);
-    expect(completeResponse.data).toBeDefined();
-    expect(completeResponse.data?.suspended).toBe(true);
+    expect(completeResponse.data).toBeNull();
+    
     
     // Verify the todo no longer shows up in due todos
     const dueResponse = await service.getDueTodos();
-    expect(dueResponse.data?.length).toBe(0);
+    expect(dueResponse.data?.find(todo => todo.item.id === itemId)).toBeUndefined();
   });
   
   // Test completing a todo with an invalid card ID
@@ -231,23 +231,8 @@ describe('HippocampusService', () => {
     const service = getHippocampusService(true) as MockHippocampusService;
     await service.initialize({ baseUrl: 'https://api.hippocampus.example.com' });
     
-    const todoData: TodoItemData = {
-      details: 'Test details',
-      priority: 3,
-      dueDate: null,
-      mustCompleteBefore: null,
-      mustCompleteOn: null,
-      recurring: false
-    };
-    
-    // Create a todo
-    const createResponse = await service.createTodo('Test Todo', todoData);
-    expect(createResponse.success).toBe(true);
-    
-    const itemId = createResponse.data!.item.id;
-    
     // Act - Use invalid card ID
-    const completeResponse = await service.completeTodo(itemId, 'invalid-card-id');
+    const completeResponse = await service.completeTodo('invalid-card-id');
     
     // Assert
     expect(completeResponse.success).toBe(false);

@@ -46,7 +46,7 @@ export class HippocampusServiceImpl implements HippocampusService {
       // If we already have the item type ID, get it from the server
       if (this.todoItemTypeId) {
         try {
-          const response = await this.fetchFromApi<ItemType>(`/item_types/${this.todoItemTypeId}`);
+          const response = await this.getFromApi<ItemType>(`/item_types/${this.todoItemTypeId}`);
           
           // Verify we got a valid item type with the expected name
           if (response && response.name === this.TODO_ITEM_TYPE_NAME) {
@@ -63,7 +63,7 @@ export class HippocampusServiceImpl implements HippocampusService {
       }
       
       // Try to find the Todo item type
-      const allItemTypes = await this.fetchFromApi<ItemType[]>('/item_types');
+      const allItemTypes = await this.getFromApi<ItemType[]>('/item_types');
       const todoItemType = allItemTypes.find(type => type.name === this.TODO_ITEM_TYPE_NAME);
       
       if (todoItemType) {
@@ -136,7 +136,7 @@ export class HippocampusServiceImpl implements HippocampusService {
       }
       
       // Get all items of the Todo type
-      const items = await this.fetchFromApi<Item[]>(`/items?item_type_id=${itemTypeResponse.data.id}`);
+      const items = await this.getFromApi<Item[]>(`/items?item_type_id=${itemTypeResponse.data.id}`);
       
       // Get cards for all items
       const todosWithCards = await Promise.all(
@@ -188,16 +188,15 @@ export class HippocampusServiceImpl implements HippocampusService {
   
   // This completes a todo item by suspending its card
   // the server will then stop reviewing the todo item
-  public async completeTodo(cardId: string): Promise<ServiceResponse<Card>> {
+  public async completeTodo(cardId: string): Promise<ServiceResponse<null>> {
     if (!this.initialized) {
       return { success: false, error: "Service not initialized" };
     }
     
     try {
-      // TODO: fix this - it doesn't work because suspending isn't setup on the server yet.
-      const updatedCard = await this.patchToApi<Card, { suspended: boolean }>(`/cards/${cardId}`, { suspended: true });
+      await this.postToApi<null, boolean>(`/cards/${cardId}/suspend`, true);
       
-      return { success: true, data: updatedCard };
+      return { success: true, data: null };
     } catch (error) {
       return { success: false, error: `Failed to complete todo: ${error instanceof Error ? error.message : String(error)}` };
     }
@@ -252,10 +251,15 @@ export class HippocampusServiceImpl implements HippocampusService {
     
     try {
       // Get the card for the item
-      const cards = await this.fetchFromApi<Card[]>(`/cards?item_id=${itemId}`);
+      const cards = await this.getFromApi<Card[]>(`/items/${itemId}/cards`);
       
       if (cards.length === 0) {
         return { success: false, error: `No card found for item ${itemId}` };
+      }
+
+      if (cards.length > 1) {
+        const cardIds = cards.map(card => card.id).join(', ');
+        return { success: false, error: `Multiple cards found for item ${itemId}: [${cardIds}]` };
       }
       
       return { success: true, data: cards[0] };
@@ -266,7 +270,7 @@ export class HippocampusServiceImpl implements HippocampusService {
 
   // Private helper methods for API communication
   
-  private async fetchFromApi<T>(endpoint: string): Promise<T> {
+  private async getFromApi<T>(endpoint: string): Promise<T> {
     if (!this.config) {
       throw new Error("Service not initialized");
     }
@@ -298,15 +302,24 @@ export class HippocampusServiceImpl implements HippocampusService {
     if (this.config.apiKey) {
       headers['Authorization'] = `Bearer ${this.config.apiKey}`;
     }
-    
+
     const response = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(data)
     });
-    
+
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    }
+
+    if (response.status === 204) {
+      return null as T;
+    }
+
+    const contentLength = response.headers.get('content-length');
+    if (contentLength === '0') {
+      return null as T;
     }
     
     return response.json() as Promise<T>;

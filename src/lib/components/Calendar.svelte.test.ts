@@ -13,7 +13,7 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import Calendar from './Calendar.svelte';
 
 describe('Calendar.svelte', () => {
-  return // I don't want to run this test suite
+  return; // I don't want to run this test suite
 
   // Reset before each test
   beforeEach(() => {

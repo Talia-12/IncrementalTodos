@@ -182,7 +182,7 @@ export class MockHippocampusService implements HippocampusService {
     return { success: true, data: result };
   }
   
-  public async completeTodo(cardId: string): Promise<ServiceResponse<Card>> {
+  public async completeTodo(cardId: string): Promise<ServiceResponse<null>> {
     await this.delay();
     
     if (!this.initialized) {
@@ -208,7 +208,7 @@ export class MockHippocampusService implements HippocampusService {
     
     this.cards.set(cardId, updatedCard);
     
-    return { success: true, data: updatedCard };
+    return { success: true, data: null };
   }
   
   public async rescheduleTodo(cardId: string, rating: number): Promise<ServiceResponse<Review>> {

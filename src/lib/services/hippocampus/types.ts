@@ -25,7 +25,7 @@ export interface Card {
   id: string;
   item_id: string;
   due_date: string | null;
-  suspended: boolean;
+  suspended: string | null; // the suspension date or null if not suspended
   created_at: string;
   updated_at: string;
 }
