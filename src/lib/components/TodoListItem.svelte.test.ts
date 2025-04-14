@@ -35,10 +35,12 @@ describe('TodoListItem.svelte', () => {
   // Create a base todo for testing
   const createTestTodo = (overrides = {}): Todo => ({
     id: '123',
+    itemId: '456',
+    cardId: '789',
     title: 'Test Todo',
     details: 'Test details',
     createdAt: new Date(),
-    priority: 3,
+    priority: 0.5,
     completed: false,
     nextCheckDate: new Date(),
     delayDays: 0,

@@ -5,12 +5,14 @@
   - src/routes/+page.svelte
   - src/lib/stores/todoStore.ts
   - src/lib/utils/priority.ts
+  - src/lib/services/hippocampus/hippocampusService.ts
 -->
 
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
   import { onMount, onDestroy } from 'svelte';
   import { getPriorityColor } from '$lib/utils/priority';
+	import { ReviewRating } from '$lib/services/hippocampus';
   
   export let todo: Todo | null = null;
   let menuOpen = false;
@@ -19,13 +21,13 @@
   
   function completeTodo() {
     if (todo) {
-      todoStore.completeTodo(todo.id);
+      todoStore.completeTodo(todo.id, todo.cardId, !todo.completed);
     }
   }
   
   function deleteTodo() {
     if (todo) {
-      todoStore.deleteTodo(todo.id);
+      todoStore.deleteTodo(todo.id, todo.cardId);
       closeMenu();
     }
   }
@@ -36,29 +38,6 @@
   
   function cancelDelete() {
     deleteConfirmation = false;
-  }
-  
-  function deferTodo(days: number | string) {
-    if (todo) {
-      // Calculate delay multiplier based on priority
-      // Priority 1 (low) = 1.5x delay
-      // Priority 3 (medium) = 1x delay  
-      // Priority 5 (high) = 0.75x delay
-      const priorityMultiplier = todo.priority 
-        ? 1.5 - ((todo.priority - 1) * 0.1875) 
-        : 1;
-      
-      if (typeof days === 'number') {
-        // Defer by a fixed number of days - this shouldn't be
-        // affected by priority multiplier since we want the actual
-        // deferred days to be the same as the displayed days
-        todoStore.deferTodo(todo.id, days, 1.05);
-      } else if (days === 'short') {
-        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier, 1.2);
-      } else if (days === 'long') {
-        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier * 2, 1.5);
-      }
-    } 
   }
   
   function updatePriority(priority: number) {
@@ -133,16 +112,16 @@
         // Number keys 1-4 for defer buttons
         if (event.key === '1') {
           event.preventDefault();
-          deferTodo(1); // Defer 1 day
+          todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Again); // Defer 1 day
         } else if (event.key === '2') {
           event.preventDefault();
-          deferTodo(7); // Defer 7 days
+          todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Hard); // Defer 7 days
         } else if (event.key === '3') {
           event.preventDefault();
-          deferTodo('short');
+          todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Good);
         } else if (event.key === '4') {
           event.preventDefault();
-          deferTodo('long');
+          todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Easy);
         }
       }
     }
@@ -316,20 +295,17 @@
         </button>
         
         <div class="defer-buttons">
-          <button class="defer-btn" on:click={() => deferTodo(1)}>
+          <button class="defer-btn" on:click={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Again)}>
             1 Day
           </button>
-          <button class="defer-btn" on:click={() => deferTodo(7)}>
+          <button class="defer-btn" on:click={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Hard)}>
             7 Days
           </button>
-          <!-- Priority affects defer duration:
-               Priority 1 (low) = 1.5x longer
-               Priority 3 (med) = 1.0x base duration  
-               Priority 5 (high) = 0.75x shorter -->
-          <button class="defer-btn" on:click={() => deferTodo('short')}>
+          <!-- TODO: update this to use the actual defer duration from the server -->
+          <button class="defer-btn" on:click={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Good)}>
             {@html formatDeferDuration(Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 1.2))}
           </button>
-          <button class="defer-btn" on:click={() => deferTodo('long')}>
+          <button class="defer-btn" on:click={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Easy)}>
             {@html formatDeferDuration(Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 2))}
           </button>
         </div>

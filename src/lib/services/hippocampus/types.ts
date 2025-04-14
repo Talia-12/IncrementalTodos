@@ -24,10 +24,10 @@ export interface Item {
 export interface Card {
   id: string;
   item_id: string;
-  due_date: string | null;
+  due_date: string;
+  last_review: string | null;
   suspended: string | null; // the suspension date or null if not suspended
-  created_at: string;
-  updated_at: string;
+  priority: number;
 }
 
 export interface Review {
@@ -40,7 +40,6 @@ export interface Review {
 // Todo-specific data that will be stored in item_data
 export interface TodoItemData {
   details: string;
-  priority: number;
   dueDate: string | null;
   mustCompleteBefore: string | null;
   mustCompleteOn: string | null;
@@ -67,6 +66,7 @@ export interface CreateItemTypeRequest {
 export interface CreateItemRequest {
   item_type_id: string;
   title: string;
+  priority: number;
   item_data: TodoItemData | null;
 }
 

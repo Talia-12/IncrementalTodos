@@ -78,14 +78,13 @@ async function createTestTodo(): Promise<{ item: Item, card: Card, title: string
   const title = await generateUniqueTitle('Test Todo');
   const todoData: TodoItemData = {
     details: 'Created for testing purposes',
-    priority: 3,
     dueDate: null,
     mustCompleteBefore: null,
     mustCompleteOn: null,
     recurring: false
   };
   
-  const response = await service.createTodo(title, todoData);
+  const response = await service.createTodo(title, 0.5, todoData);
   if (!response.success || !response.data) {
     throw new Error(`Failed to create test todo: ${response.error}`);
   }
@@ -166,7 +165,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     const title = await generateUniqueTitle('Create Test Todo');
     const todoData: TodoItemData = {
       details: 'Test details for create test',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -174,7 +172,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     };
     
     // Act
-    const response = await service.createTodo(title, todoData);
+    const response = await service.createTodo(title, 0.5, todoData);
     
     // Assert
     expect(response.success).toBe(true);
@@ -194,18 +192,17 @@ describe('HippocampusServiceImpl with real server', async () => {
     const title = await generateUniqueTitle('Duplicate Test');
     const todoData: TodoItemData = {
       details: 'Test details for duplicate test',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
       recurring: false
     };
     
-    const firstResponse = await service.createTodo(title, todoData);
+    const firstResponse = await service.createTodo(title, 0.5, todoData);
     expect(firstResponse.success).toBe(true);
     
     // Act - Try to create another todo with the same title
-    const secondResponse = await service.createTodo(title, todoData);
+    const secondResponse = await service.createTodo(title, 0.4, todoData);
     
     // Assert - Clear expectation that duplicates should be rejected
     expect(secondResponse.success).toBe(false);
@@ -250,7 +247,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     
     const todoData: TodoItemData = {
       details: 'Test details for due test',
-      priority: 3,
       dueDate: pastDate.toISOString(), // Due yesterday
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -258,7 +254,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     };
     
     // Create the todo (card should be due immediately)
-    const createResponse = await service.createTodo(title, todoData);
+    const createResponse = await service.createTodo(title, 0.5, todoData);
     expect(createResponse.success).toBe(true);
     const createdItemId = createResponse.data!.item.id;
     
@@ -298,7 +294,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     const { item, card } = await createTestTodo();
     
     // Act
-    const response = await service.completeTodo(card.id);
+    const response = await service.completeTodo(card.id, true);
     
     // Assert
     expect(response.success).toBe(true);
@@ -320,7 +316,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     const fakeCardId = `card-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     
     // Act
-    const response = await service.completeTodo(fakeCardId);
+    const response = await service.completeTodo(fakeCardId, true);
     
     // Assert
     expect(response.success).toBe(false);
@@ -420,7 +416,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     const title = await generateUniqueTitle('Recurring Test Todo');
     const todoData: TodoItemData = {
       details: 'Test details for recurring todo',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -432,7 +427,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     };
     
     // Act
-    const response = await service.createTodo(title, todoData);
+    const response = await service.createTodo(title, 0.5, todoData);
     
     // Assert
     expect(response.success).toBe(true);
@@ -458,7 +453,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     const title = await generateUniqueTitle('Advanced Test Todo');
     const todoData: TodoItemData = {
       details: 'Test details for advanced todo',
-      priority: 5,
       dueDate: tomorrow.toISOString(),
       mustCompleteBefore: nextWeek.toISOString(),
       mustCompleteOn: null,
@@ -466,13 +460,13 @@ describe('HippocampusServiceImpl with real server', async () => {
     };
     
     // Act
-    const response = await service.createTodo(title, todoData);
+    const response = await service.createTodo(title, 0.5, todoData);
     
     // Assert
     expect(response.success).toBe(true);
     expect(response.data).toBeDefined();
     expect(response.data?.item.title).toBe(title);
-    expect(response.data?.item.item_data?.priority).toBe(5);
+    expect(response.data?.card.priority).toBe(0.5);
     expect(response.data?.item.item_data?.dueDate).toBe(tomorrow.toISOString());
     expect(response.data?.item.item_data?.mustCompleteBefore).toBe(nextWeek.toISOString());
   });
@@ -517,7 +511,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     assert(getAllResponse.success, 'Failed to get all todos: ' + getAllResponse.error);
     
     // Complete one todo
-    const completeResponse = await service.completeTodo(todo1.card.id);
+    const completeResponse = await service.completeTodo(todo1.card.id, true);
     assert(completeResponse.success, 'Failed to complete todo: ' + completeResponse.error);
     
     // Reschedule another todo
@@ -561,7 +555,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     const title = await generateUniqueTitle('Complex Data Todo');
     const todoData: TodoItemData = {
       details: 'Test details with\nmultiple lines\nand special characters: !@#$%^&*()',
-      priority: 4,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -573,7 +566,7 @@ describe('HippocampusServiceImpl with real server', async () => {
     };
     
     // Act
-    const createResponse = await service.createTodo(title, todoData);
+    const createResponse = await service.createTodo(title, 0.9, todoData);
     expect(createResponse.success).toBe(true);
     
     // Fetch the created todo to verify data integrity
@@ -601,7 +594,6 @@ describe('HippocampusServiceImpl with real server', async () => {
     
     const todoData: TodoItemData = {
       details: 'Test details for concurrent operations',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -609,9 +601,9 @@ describe('HippocampusServiceImpl with real server', async () => {
     };
     
     // Start all operations concurrently
-    const operation1 = service.createTodo(title1, todoData);
-    const operation2 = service.createTodo(title2, todoData);
-    const operation3 = service.createTodo(title3, todoData);
+    const operation1 = service.createTodo(title1, 0.5, todoData);
+    const operation2 = service.createTodo(title2, 0.4, todoData);
+    const operation3 = service.createTodo(title3, 0.3, todoData);
     const operation4 = service.getAllTodos();
     
     // Wait for all to complete

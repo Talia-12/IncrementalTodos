@@ -73,7 +73,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -81,7 +80,7 @@ describe('HippocampusService', () => {
     };
     
     // Act
-    const response = await service.createTodo('Test Todo', todoData);
+    const response = await service.createTodo('Test Todo', 0.5, todoData);
     
     // Assert
     expect(response.success).toBe(true);
@@ -104,7 +103,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -112,7 +110,7 @@ describe('HippocampusService', () => {
     };
     
     // Act
-    const response = await service.createTodo('Test Todo', todoData);
+    const response = await service.createTodo('Test Todo', 0.5, todoData);
     
     // Assert
     expect(response.success).toBe(false);
@@ -131,15 +129,14 @@ describe('HippocampusService', () => {
     // Create a couple of todos
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
       recurring: false
     };
     
-    await service.createTodo('Todo 1', todoData);
-    await service.createTodo('Todo 2', todoData);
+    await service.createTodo('Todo 1', 0.5, todoData);
+    await service.createTodo('Todo 2', 0.5, todoData);
     
     // Act
     const response = await service.getAllTodos();
@@ -160,7 +157,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -168,8 +164,8 @@ describe('HippocampusService', () => {
     };
     
     // Create todos (by default they're due tomorrow in mock)
-    const todo1 = await service.createTodo('Todo 1', todoData);
-    const todo2 = await service.createTodo('Todo 2', todoData);
+    const todo1 = await service.createTodo('Todo 1', 0.5, todoData);
+    const todo2 = await service.createTodo('Todo 2', 0.5, todoData);
     
     // Get the cards and manually update one to be due now
     if (todo1.success && todo1.data) {
@@ -198,7 +194,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -206,7 +201,7 @@ describe('HippocampusService', () => {
     };
     
     // Create a todo
-    const createResponse = await service.createTodo('Test Todo', todoData);
+    const createResponse = await service.createTodo('Test Todo', 0.5, todoData);
     expect(createResponse.success).toBe(true);
     
     const itemId = createResponse.data!.item.id;
@@ -247,7 +242,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -255,7 +249,7 @@ describe('HippocampusService', () => {
     };
     
     // Create a todo
-    const createResponse = await service.createTodo('Test Todo', todoData);
+    const createResponse = await service.createTodo('Test Todo', 0.5, todoData);
     expect(createResponse.success).toBe(true);
     
     const cardId = createResponse.data!.card.id;
@@ -278,7 +272,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -286,7 +279,7 @@ describe('HippocampusService', () => {
     };
     
     // Create a todo
-    const createResponse = await service.createTodo('Test Todo', todoData);
+    const createResponse = await service.createTodo('Test Todo', 0.5, todoData);
     expect(createResponse.success).toBe(true);
     
     const cardId = createResponse.data!.card.id;
@@ -307,7 +300,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -315,7 +307,7 @@ describe('HippocampusService', () => {
     };
     
     // Create a todo
-    const createResponse = await service.createTodo('Test Todo', todoData);
+    const createResponse = await service.createTodo('Test Todo', 0.5, todoData);
     expect(createResponse.success).toBe(true);
     
     const itemId = createResponse.data!.item.id;
@@ -323,7 +315,6 @@ describe('HippocampusService', () => {
     // Updated data
     const updatedData: TodoItemData = {
       details: 'Updated details',
-      priority: 4,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -348,7 +339,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -356,7 +346,7 @@ describe('HippocampusService', () => {
     };
     
     // Create a todo
-    const createResponse = await service.createTodo('Test Todo', todoData);
+    const createResponse = await service.createTodo('Test Todo', 0.5, todoData);
     expect(createResponse.success).toBe(true);
     
     const itemId = createResponse.data!.item.id;
@@ -380,7 +370,6 @@ describe('HippocampusService', () => {
     
     const todoData: TodoItemData = {
       details: 'Test details',
-      priority: 3,
       dueDate: null,
       mustCompleteBefore: null,
       mustCompleteOn: null,
@@ -392,7 +381,7 @@ describe('HippocampusService', () => {
     expect(typeResponse.success).toBe(false);
     expect(typeResponse.error).toContain('not initialized');
     
-    const createResponse = await service.createTodo('Test Todo', todoData);
+    const createResponse = await service.createTodo('Test Todo', 0.5, todoData);
     expect(createResponse.success).toBe(false);
     expect(createResponse.error).toContain('not initialized');
     

@@ -5,22 +5,19 @@
   - src/routes/list/+page.svelte
   - src/lib/stores/todoStore.ts
   - src/lib/utils/priority.ts
+  - src/lib/services/hippocampus/hippocampusService.ts
 -->
 
 <script lang="ts">
   import { todoStore, type Todo } from '../stores/todoStore';
   import { getPriorityColor } from '$lib/utils/priority';
+	import { ReviewRating } from '$lib/services/hippocampus';
   
   export let todo: Todo;
   let deleteHovered = false;
  
   function toggleComplete() {
-    if (todo.completed) {
-      // If already completed, we're uncompleting it
-      todoStore.updateTodo(todo.id, { completed: false, completedAt: undefined });
-    } else {
-      todoStore.completeTodo(todo.id);
-    }
+    todoStore.completeTodo(todo.id, todo.cardId, !todo.completed);
   }
   
   // Format time to display in a readable format
@@ -31,33 +28,9 @@
     });
   }
 
-  // Function to defer todo
-  function deferTodo(days: number | string) {
-    if (todo) {
-      // Calculate delay multiplier based on priority
-      // Priority 1 (low) = 1.5x delay
-      // Priority 3 (medium) = 1x delay  
-      // Priority 5 (high) = 0.75x delay
-      const priorityMultiplier = todo.priority 
-        ? 1.5 - ((todo.priority - 1) * 0.1875) 
-        : 1;
-      
-      if (typeof days === 'number') {
-        // Defer by a fixed number of days - this shouldn't be
-        // affected by priority multiplier since we want the actual
-        // deferred days to be the same as the displayed days
-        todoStore.deferTodo(todo.id, days, 1.05);
-      } else if (days === 'short') {
-        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier, 1.2);
-      } else if (days === 'long') {
-        todoStore.deferTodo(todo.id, todo.delayDays * priorityMultiplier * 2, 1.5);
-      }
-    } 
-  }
-
   // Function to delete todo
   function deleteTodo() {
-    todoStore.deleteTodo(todo.id);
+    todoStore.deleteTodo(todo.id, todo.cardId);
   }
   
   // Format defer duration in a human-readable way
@@ -88,6 +61,8 @@
     return result;
   }
 
+  // TODO: these will need to be updated at some point to use the actual
+  // defer durations from the server
   // Calculate short and long defer durations
   const shortDeferDays = Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 1.2);
   const longDeferDays = Math.round(todo.delayDays * (todo.priority ? 1.5 - ((todo.priority - 1) * 0.1875) : 1) * 2);
@@ -132,23 +107,23 @@
 
   {#if !todo.completed}
   <div class="defer-buttons">
-    <button class="defer-btn" on:click|stopPropagation={() => deferTodo(1)} title="Defer 1 day">
+    <button class="defer-btn" on:click|stopPropagation={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Again)} title="Defer 1 day">
       1d
     </button>
-    <button class="defer-btn" on:click|stopPropagation={() => deferTodo(7)} title="Defer 7 days">
+    <button class="defer-btn" on:click|stopPropagation={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Hard)} title="Defer 7 days">
       7d
     </button>
-    <button class="defer-btn" on:click|stopPropagation={() => deferTodo('short')} title={shortDeferString}>
+    <button class="defer-btn" on:click|stopPropagation={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Good)} title={shortDeferString}>
       →
     </button>
-    <button class="defer-btn" on:click|stopPropagation={() => deferTodo('long')} title={longDeferString}>
+    <button class="defer-btn" on:click|stopPropagation={() => todoStore.deferTodo(todo.id, todo.cardId, ReviewRating.Easy)} title={longDeferString}>
       ⟶
     </button>
   </div>
   {:else}
   <div class="action-buttons">
     <button 
-      class="delete-btn" 
+      class="delete-btn"
       on:click|stopPropagation={deleteTodo} 
       on:mouseenter={() => deleteHovered = true}
       on:mouseleave={() => deleteHovered = false}

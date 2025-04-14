@@ -67,7 +67,7 @@ export class MockHippocampusService implements HippocampusService {
     return { success: true, data: this.todoItemType };
   }
   
-  public async createTodo(title: string, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>> {
+  public async createTodo(title: string, priority: number, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>> {
     await this.delay();
     
     if (!this.initialized) {
@@ -108,9 +108,9 @@ export class MockHippocampusService implements HippocampusService {
       id: cardId,
       item_id: itemId,
       due_date: tomorrow.toISOString(),
-      suspended: false,
-      created_at: now,
-      updated_at: now
+      last_review: null,
+      suspended: null,
+      priority,
     };
     
     // Store them
@@ -202,8 +202,7 @@ export class MockHippocampusService implements HippocampusService {
     // Update card to be suspended
     const updatedCard: Card = {
       ...card,
-      suspended: true,
-      updated_at: new Date().toISOString()
+      suspended: new Date().toISOString()
     };
     
     this.cards.set(cardId, updatedCard);
@@ -251,7 +250,6 @@ export class MockHippocampusService implements HippocampusService {
     const updatedCard: Card = {
       ...card,
       due_date: dueDate.toISOString(),
-      updated_at: now
     };
     
     this.cards.set(cardId, updatedCard);

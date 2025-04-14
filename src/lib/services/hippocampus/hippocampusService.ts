@@ -35,10 +35,11 @@ export interface HippocampusService {
   /**
    * Create a new todo item in Hippocampus
    * @param title - Title of the todo
+   * @param priority - Priority of the todo
    * @param data - Additional todo data
    * @returns The created item with its associated card
    */
-  createTodo(title: string, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>>;
+  createTodo(title: string, priority: number, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>>;
   
   /**
    * Get all todo items from Hippocampus
@@ -54,11 +55,11 @@ export interface HippocampusService {
   
   /**
    * Mark a todo as completed by suspending its card
-   * @param itemId - ID of the todo item
    * @param cardId - ID of the card associated with the todo
+   * @param completed - Whether the todo is completed
    * @returns The updated card
    */
-  completeTodo(cardId: string): Promise<ServiceResponse<null>>;
+  completeTodo(cardId: string, completed: boolean): Promise<ServiceResponse<null>>;
   
   /**
    * Reschedule a todo by creating a review

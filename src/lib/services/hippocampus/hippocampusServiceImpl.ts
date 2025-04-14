@@ -85,7 +85,7 @@ export class HippocampusServiceImpl implements HippocampusService {
   // This creates a new todo item in the server, returning the item
   // the server will create a card for the todo item
   // we will then need to query again to get the created card so we can return it
-  public async createTodo(title: string, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>> {
+  public async createTodo(title: string, priority: number, data: TodoItemData): Promise<ServiceResponse<{item: Item, card: Card}>> {
     if (!this.initialized) {
       return { success: false, error: "Service not initialized" };
     }
@@ -101,6 +101,7 @@ export class HippocampusServiceImpl implements HippocampusService {
       const createItemRequest: CreateItemRequest = {
         item_type_id: itemTypeResponse.data.id,
         title,
+        priority,
         item_data: data
       };
       
@@ -164,23 +165,23 @@ export class HippocampusServiceImpl implements HippocampusService {
     }
     
     try {
-      // Get all todos
-      const allTodosResponse = await this.getAllTodos();
-      if (!allTodosResponse.success || !allTodosResponse.data) {
-        return { success: false, error: allTodosResponse.error || "Failed to get all todos" };
+      // Get the Todo item type
+      const itemTypeResponse = await this.getTodoItemType();
+      if (!itemTypeResponse.success || !itemTypeResponse.data) {
+        return { success: false, error: itemTypeResponse.error || "Failed to get Todo item type" };
       }
       
-      // Filter to only include todos that are due (due_date is not null and is before or equal to now)
-      const now = new Date().toISOString();
-      const dueTodos = allTodosResponse.data.filter(todo => {
-        return (
-          todo.card.due_date !== null && 
-          !todo.card.suspended && 
-          todo.card.due_date <= now
-        );
-      });
       
-      return { success: true, data: dueTodos };
+      const now = new Date().toISOString();
+      const dueTodos = await this.getFromApi<Array<Card>>(`/cards?item_type_id=${itemTypeResponse.data.id}&next_review_before=${now}`);
+      const todosWithCards = await Promise.all(
+        dueTodos.map(async (card) => {
+          const itemResponse = await this.getFromApi<Item>(`/items/${card.item_id}`);
+          return { item: itemResponse, card };
+        })
+      );
+      
+      return { success: true, data: todosWithCards };
     } catch (error) {
       return { success: false, error: `Failed to get due todos: ${error instanceof Error ? error.message : String(error)}` };
     }
@@ -188,13 +189,13 @@ export class HippocampusServiceImpl implements HippocampusService {
   
   // This completes a todo item by suspending its card
   // the server will then stop reviewing the todo item
-  public async completeTodo(cardId: string): Promise<ServiceResponse<null>> {
+  public async completeTodo(cardId: string, completed: boolean): Promise<ServiceResponse<null>> {
     if (!this.initialized) {
       return { success: false, error: "Service not initialized" };
     }
     
     try {
-      await this.postToApi<null, boolean>(`/cards/${cardId}/suspend`, true);
+      await this.postToApi<null, boolean>(`/cards/${cardId}/suspend`, completed);
       
       return { success: true, data: null };
     } catch (error) {
