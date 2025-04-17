@@ -52,6 +52,12 @@ export interface HippocampusService {
    * @returns Array of due todo items with their associated cards
    */
   getDueTodos(): Promise<ServiceResponse<Array<{item: Item, card: Card}>>>;
+
+  /**
+   * Get todo items that were completed today
+   * @returns Array of completed todo items with their associated cards
+   */
+  getCompletedTodos(): Promise<ServiceResponse<Array<{item: Item, card: Card}>>>;
   
   /**
    * Mark a todo as completed by suspending its card

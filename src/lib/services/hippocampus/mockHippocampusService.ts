@@ -181,6 +181,18 @@ export class MockHippocampusService implements HippocampusService {
     
     return { success: true, data: result };
   }
+
+  public async getCompletedTodos(): Promise<ServiceResponse<Array<{item: Item, card: Card}>>> {
+    await this.delay();
+    
+    if (!this.initialized) {
+      return { success: false, error: "Service not initialized" };
+    }
+
+    return { success: true, data: [
+      { item: this.items.get('item-1')!, card: this.cards.get('card-1')! },
+    ] };
+  }
   
   public async completeTodo(cardId: string): Promise<ServiceResponse<null>> {
     await this.delay();

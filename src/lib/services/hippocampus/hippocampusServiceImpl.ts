@@ -171,8 +171,12 @@ export class HippocampusServiceImpl implements HippocampusService {
         return { success: false, error: itemTypeResponse.error || "Failed to get Todo item type" };
       }
       
+      // Get tomorrow at midnight to ensure we get all todos due today
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      const now = tomorrow.toISOString();
       
-      const now = new Date().toISOString();
       const dueTodos = await this.getFromApi<Array<Card>>(`/cards?item_type_id=${itemTypeResponse.data.id}&next_review_before=${now}`);
       const todosWithCards = await Promise.all(
         dueTodos.map(async (card) => {
@@ -180,12 +184,48 @@ export class HippocampusServiceImpl implements HippocampusService {
           return { item: itemResponse, card };
         })
       );
-      
+
       return { success: true, data: todosWithCards };
     } catch (error) {
       return { success: false, error: `Failed to get due todos: ${error instanceof Error ? error.message : String(error)}` };
     }
   }
+
+
+  // This gets all todo items from the server that were completed today
+  // this is done by querying the server for all items, and then for each item, querying the server for the card
+  // and then filtering them by completed date
+  public async getCompletedTodos(): Promise<ServiceResponse<Array<{item: Item, card: Card}>>> {
+    if (!this.initialized) {
+      return { success: false, error: "Service not initialized" };
+    }
+
+    try {
+      // Get the Todo item type
+      const itemTypeResponse = await this.getTodoItemType();
+      if (!itemTypeResponse.success || !itemTypeResponse.data) {
+        return { success: false, error: itemTypeResponse.error || "Failed to get Todo item type" };
+      }
+
+      // Get today at midnight to ensure we get all todos completed today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const now = today.toISOString();
+
+      const completedTodayTodos = await this.getFromApi<Array<Card>>(`/cards?item_type_id=${itemTypeResponse.data.id}&suspended_after=${now}&suspended_filter=Only`);
+      const todosWithCards = await Promise.all(
+        completedTodayTodos.map(async (card) => {
+          const itemResponse = await this.getFromApi<Item>(`/items/${card.item_id}`);
+          return { item: itemResponse, card };
+        })
+      );
+
+      return { success: true, data: todosWithCards };
+    } catch (error) {
+      return { success: false, error: `Failed to get completed todos: ${error instanceof Error ? error.message : String(error)}` };
+    }
+  }
+
   
   // This completes a todo item by suspending its card
   // the server will then stop reviewing the todo item

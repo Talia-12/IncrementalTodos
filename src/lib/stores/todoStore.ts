@@ -106,7 +106,10 @@ function mapToHippocampus(todo: Todo): TodoItemData {
 
 function createTodoStore() {
   // Initialize with an empty array
-  const { subscribe, update, set } = writable<Todo[]>([]);
+  const { subscribe, update, set } = writable<{
+    due: Todo[],
+    completed: Todo[]
+  }>({ due: [], completed: [] });
   
   // Initialize the Hippocampus service
   const hippocampusService: HippocampusService = getHippocampusService(false);
@@ -121,12 +124,25 @@ function createTodoStore() {
     if (!initialized) return;
     
     try {
-      const response = await hippocampusService.getDueTodos();
-      if (response.success && response.data) {
-        const todos = response.data.map(({ item, card }) => mapFromHippocampus(item, card));
-        set(todos);
-      } else {
-        console.error('Failed to get due todos:', response.error);
+      const dueResponse = await hippocampusService.getDueTodos();
+      const completedResponse = await hippocampusService.getCompletedTodos();
+
+      if (dueResponse.success && dueResponse.data && completedResponse.success && completedResponse.data) {
+
+        const dueTodos = dueResponse.data.map(({ item, card }) => mapFromHippocampus(item, card));
+        const completedTodos = completedResponse.data.map(({ item, card }) => mapFromHippocampus(item, card));
+
+        set({ due: dueTodos, completed: completedTodos });
+      }
+      else {
+        // Only print error for the responses that failed
+        if (!dueResponse.success) {
+          console.error('Failed to get due todos:', dueResponse.error);
+        }
+        
+        if (!completedResponse.success) {
+          console.error('Failed to get completed todos:', completedResponse.error);
+        }
       }
     } catch (error) {
       console.error('Error refreshing todos:', error);
@@ -215,10 +231,41 @@ function createTodoStore() {
         
         if (response.success) {
           // Update the local store
-          update(todos => {
-            const updatedTodos = todos.filter(todo => todo.id !== id);
-            return updatedTodos;
-          });
+          if (completed) {
+            update(todos => {
+              // get the todo that's being completed out of due, and insert it into completed
+              const todo = todos.due.find(todo => todo.id === id);
+              if (todo) {
+                // set the todo's completedAt to now
+                const updatedTodo = { ...todo, completedAt: new Date(), completed: true };
+                return {
+                  due: todos.due.filter(todo => todo.id !== id),
+                  completed: [...todos.completed, updatedTodo]
+                };
+              } else {
+                console.error('Cannot complete todo: Todo not found');
+              }
+  
+              return todos;
+            });
+          } else {
+            update(todos => {
+              // get the todo that's being uncompleted out of completed, and insert it into due
+              const todo = todos.completed.find(todo => todo.id === id);
+              if (todo) {
+                // set the todo's completedAt to undefined
+                const updatedTodo = { ...todo, completedAt: undefined, completed: false };
+                return {
+                  due: [...todos.due, updatedTodo],
+                  completed: todos.completed.filter(todo => todo.id !== id)
+                };
+              } else {
+                console.error('Cannot uncomplete todo: Todo not found');
+              }
+  
+              return todos;
+            });
+          }
         } else {
           console.error('Failed to complete todo:', response.error);
         }
@@ -253,7 +300,10 @@ function createTodoStore() {
         if (response.success) {
           // Update the local store - remove the todo as it's no longer due
           update(todos => {
-            const updatedTodos = todos.filter(todo => todo.id !== id);
+            const updatedTodos = {
+              due: todos.due.filter(todo => todo.id !== id),
+              completed: todos.completed
+            };
             return updatedTodos;
           });
         } else {
@@ -274,7 +324,7 @@ function createTodoStore() {
       try {
         // Get the current todo
         const todos = get({ subscribe });
-        const todo = todos.find(t => t.id === id);
+        const todo = todos.due.find(t => t.id === id);
         
         if (!todo) {
           console.error('Cannot update todo: Todo not found');
@@ -283,9 +333,12 @@ function createTodoStore() {
         
         // Update the local store
         update(todos => {
-          const updatedTodos = todos.map(todo => 
-            todo.id === id ? { ...todo, ...updates } : todo
-          );
+          const updatedTodos = {
+            due: todos.due.map(todo => 
+              todo.id === id ? { ...todo, ...updates } : todo
+            ),
+            completed: todos.completed
+          };
           return updatedTodos;
         });
         
@@ -311,7 +364,7 @@ type Subscriber<T> = (value: T) => void;
 type Unsubscriber = () => void;
 
 interface TodoStore {
-  subscribe: (run: Subscriber<Todo[]>, invalidate?: () => void) => Unsubscriber;
+  subscribe: (run: Subscriber<{ due: Todo[], completed: Todo[] }>, invalidate?: () => void) => Unsubscriber;
   cleanup: () => void;
   addTodo: (todo: Omit<Todo, 'id' | 'cardId' | 'createdAt' | 'completed' | 'nextCheckDate' | 'delayDays'>) => Promise<void>;
   completeTodo: (id: string, cardId: string, completed: boolean) => Promise<void>;
@@ -324,24 +377,15 @@ interface TodoStore {
 export const todoStore = createTodoStore() as TodoStore;
 
 // Derived stores for specific views
-export const todaysTodos = derived(todoStore, ($todos: Todo[]) => {
+export const todaysTodos = derived(todoStore, ($todos: { due: Todo[], completed: Todo[] }) => {
   // All todos in the store are already due, so no filtering needed
-  return $todos.filter(todo => !todo.completed);
+  return $todos.due;
 });
 
 // TODO: this is probably not going to work; need to fix to do a different server query
-export const completedToday = derived(todoStore, ($todos: Todo[]) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
-  return $todos.filter(todo => {
-    if (!todo.completedAt) return false;
-    const completedDate = new Date(todo.completedAt);
-    return completedDate >= today && completedDate < tomorrow;
-  });
+export const completedToday = derived(todoStore, ($todos: { due: Todo[], completed: Todo[] }) => {
+  // All todos in the store were completed today
+  return $todos.completed;
 });
 
 // Helper to get the next todo to focus on
