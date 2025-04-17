@@ -11,9 +11,21 @@ export interface LoggingOptions {
 }
 
 /**
+ * Checks if the application is running in a Tauri environment
+ * @returns Boolean indicating if Tauri is available
+ */
+function isTauriAvailable(): boolean {
+  return typeof window !== 'undefined' && 
+         '__TAURI_INTERNALS__' in window;
+}
+
+/**
  * Initializes logging by forwarding all console methods to the Tauri log plugin.
  * This ensures that all console messages are captured by the log plugin for
  * centralized logging.
+ * 
+ * In non-Tauri environments (like browser development), this will use standard 
+ * console methods instead.
  * 
  * @param options - Configuration options for logging
  * @returns A promise that resolves when logging is initialized
@@ -25,6 +37,12 @@ export async function initializeLogging(options: LoggingOptions = {}): Promise<v
   } = options;
   
   try {
+    // Check if we're in a Tauri environment
+    if (!isTauriAvailable()) {
+      console.info('Tauri environment not detected. Using standard console logging.');
+      return;
+    }
+    
     // Attach the console to the Tauri log plugin if requested
     if (shouldAttachConsole) {
       await attachConsole();

@@ -68,11 +68,15 @@
     openDialog();
   }
   
-  onMount(() => {
-    // Initialize logging as early as possible
-    initializeLogging().catch(err => {
-      console.error('Failed to initialize logging:', err);
-    });
+  onMount(async () => {
+    // Initialize logging system safely 
+    try {
+      await initializeLogging();
+      console.info('Logging system initialized successfully');
+    } catch (err) {
+      // Only log to console since logging system failed
+      console.warn('Logging system initialization failed, using standard console logging:', err);
+    }
     
     // Use capture phase (true as third parameter) to intercept before browser defaults
     document.addEventListener('keydown', handleKeydown, true);
