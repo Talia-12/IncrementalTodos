@@ -36,6 +36,8 @@ vi.mock('$lib/utils/priority', () => {
 describe('FocusedTodo.svelte', () => {
   const mockTodo = {
     id: '1',
+    itemId: '2',
+    cardId: '3',
     title: 'Test Todo',
     details: 'This is a test todo',
     completed: false,

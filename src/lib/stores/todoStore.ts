@@ -14,7 +14,6 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { onDestroy } from 'svelte';
 import { 
   getHippocampusService, 
   type HippocampusService, 
@@ -157,18 +156,22 @@ function createTodoStore() {
     }
   }
   
-  // Cleanup the interval when the store is destroyed
-  onDestroy(() => {
+  //  Cleanup the interval
+  function cleanup() {
     if (refreshInterval) {
       clearInterval(refreshInterval);
+      refreshInterval = null;
     }
-  });
+  }
   
   // Call initialize
   initialize();
   
   const storeWithHippocampus = {
     subscribe,
+    
+    // Add a cleanup method that components can call during their onDestroy
+    cleanup,
     
     // Add a new todo to the server
     addTodo: async (todo: Omit<Todo, 'id' | 'cardId' | 'createdAt' | 'completed' | 'nextCheckDate' | 'delayDays'>) => {
@@ -303,15 +306,31 @@ function createTodoStore() {
   return storeWithHippocampus;
 }
 
-export const todoStore = createTodoStore();
+// Create the TodoStore type properly, using the correct type for subscribe
+type Subscriber<T> = (value: T) => void;
+type Unsubscriber = () => void;
+
+interface TodoStore {
+  subscribe: (run: Subscriber<Todo[]>, invalidate?: () => void) => Unsubscriber;
+  cleanup: () => void;
+  addTodo: (todo: Omit<Todo, 'id' | 'cardId' | 'createdAt' | 'completed' | 'nextCheckDate' | 'delayDays'>) => Promise<void>;
+  completeTodo: (id: string, cardId: string, completed: boolean) => Promise<void>;
+  deleteTodo: (id: string, cardId: string) => Promise<void>;
+  deferTodo: (id: string, cardId: string, rating: ReviewRating) => Promise<void>;
+  updateTodo: (id: string, updates: Partial<Todo>) => Promise<void>;
+  refresh: () => Promise<void>;
+}
+
+export const todoStore = createTodoStore() as TodoStore;
 
 // Derived stores for specific views
-export const todaysTodos = derived(todoStore, $todos => {
+export const todaysTodos = derived(todoStore, ($todos: Todo[]) => {
   // All todos in the store are already due, so no filtering needed
   return $todos.filter(todo => !todo.completed);
 });
 
-export const completedToday = derived(todoStore, $todos => {
+// TODO: this is probably not going to work; need to fix to do a different server query
+export const completedToday = derived(todoStore, ($todos: Todo[]) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   

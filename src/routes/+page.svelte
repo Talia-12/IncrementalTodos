@@ -37,6 +37,12 @@
       if (unsubscribe) unsubscribe();
     };
   });
+  
+  // Call the todoStore cleanup function when the component is destroyed
+  onDestroy(() => {
+    if (unsubscribe) unsubscribe();
+    todoStore.cleanup();
+  });
 </script>
 
 <svelte:head>

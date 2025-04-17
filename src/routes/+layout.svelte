@@ -14,6 +14,7 @@
   import AddTodoDialog from '$lib/components/AddTodoDialog.svelte';
   import { onMount, onDestroy } from 'svelte';
   import { initializeLogging } from '$lib/utils/logging';
+  import { todoStore } from '$lib/stores/todoStore';
   import '../app.css';
   
   let dialogOpen = false;
@@ -82,6 +83,9 @@
     // Make sure to remove the capture phase listener
     document.removeEventListener('keydown', handleKeydown, true);
     window.removeEventListener('open-add-todo-dialog', handleCustomEvent);
+    
+    // Clean up the todoStore
+    todoStore.cleanup();
   });
 </script>
 
